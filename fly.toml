@@ -1,0 +1,35 @@
+# fly.toml for B-Side deployment on Fly.io
+app = "b-side"
+primary_region = "iad"
+console_command = "/rails/bin/rails console"
+
+[build]
+
+[deploy]
+  release_command = "bin/rails db:prepare"
+
+[processes]
+  app = "bin/thrust bin/rails server"
+  worker = "bundle exec solid_queue start"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 1000
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[[statics]]
+  guest_path = "/rails/public"
+  url_prefix = "/"

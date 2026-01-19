@@ -1,0 +1,57 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">B-Side Music Challenge</h1>
+
+  <% if user_signed_in? %>
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Your Groups</h2>
+      
+      <% if @groups.any? %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% @groups.each do |group| %>
+            <div class="bg-gray-800 rounded-lg p-6">
+              <h3 class="text-xl font-semibold mb-2"><%= group.name %></h3>
+              <%= link_to "View Group", group_path(group), class: "text-blue-400 hover:text-blue-300" %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-400 mb-4">You're not in any groups yet.</p>
+      <% end %>
+      
+      <%= link_to "Create New Group", new_group_path, class: "inline-block mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded" %>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold mb-4">Active Weeks</h2>
+      
+      <% if @active_weeks.any? %>
+        <div class="space-y-4">
+          <% @active_weeks.each do |week| %>
+            <div class="bg-gray-800 rounded-lg p-6">
+              <h3 class="text-xl font-semibold mb-2"><%= week.category %></h3>
+              <p class="text-gray-400 mb-2">Week <%= week.number %> - <%= week.season.group.name %></p>
+              
+              <% if week.submission_phase? %>
+                <p class="text-green-400 mb-2">Submission Phase</p>
+                <p class="text-sm text-gray-400">Submit by <%= week.submission_deadline.strftime("%B %d, %I:%M %p") %></p>
+              <% elsif week.voting_phase? %>
+                <p class="text-yellow-400 mb-2">Voting Phase</p>
+                <p class="text-sm text-gray-400">Vote by <%= week.voting_deadline.strftime("%B %d, %I:%M %p") %></p>
+              <% end %>
+              
+              <%= link_to "View Week", group_season_week_path(week.season.group, week.season, week), class: "inline-block mt-4 text-blue-400 hover:text-blue-300" %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-400">No active weeks at the moment.</p>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center">
+      <p class="text-xl mb-8">Welcome to B-Side! Sign in to join the music challenge.</p>
+      <%= link_to "Sign In", new_user_session_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg inline-block mr-4" %>
+      <%= link_to "Sign Up", new_user_registration_path, class: "bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg inline-block" %>
+    </div>
+  <% end %>
+</div>

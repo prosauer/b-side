@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "B-Side Music Challenge" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="B-Side">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# Includes all JavaScript files in app/javascript %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body class="bg-gray-900 text-gray-100 min-h-screen">
+    <%# Flash messages %>
+    <% if notice %>
+      <div class="bg-blue-500 text-white px-4 py-3 mb-4">
+        <%= notice %>
+      </div>
+    <% end %>
+    <% if alert %>
+      <div class="bg-red-500 text-white px-4 py-3 mb-4">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>
