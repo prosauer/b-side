@@ -34,7 +34,7 @@ class SeasonsController < ApplicationController
     if @season.save
       # Deactivate other seasons
       @group.seasons.where.not(id: @season.id).update_all(active: false)
-      
+
       # Create 10 weeks for the season
       10.times do |i|
         week_number = i + 1
@@ -42,7 +42,7 @@ class SeasonsController < ApplicationController
         start_of_week = @season.start_date + (i * 7).days
         submission_deadline = (start_of_week + 3.days).end_of_day  # Thursday
         voting_deadline = (start_of_week + 6.days).end_of_day      # Sunday
-        
+
         @season.weeks.create!(
           number: week_number,
           category: "TBD - Set by admin",

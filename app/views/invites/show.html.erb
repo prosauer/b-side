@@ -1,2 +1,61 @@
-<h1>Invites#show</h1>
-<p>Find me in app/views/invites/show.html.erb</p>
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-md w-full">
+    <div class="text-center mb-8">
+      <h1 class="text-5xl font-bold text-purple-400 mb-2">🎵 B-Side</h1>
+      <p class="text-xl text-gray-300">Music Challenge</p>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg p-8 border border-gray-700 shadow-xl">
+      <h2 class="text-2xl font-bold mb-4 text-center">You're Invited!</h2>
+      
+      <div class="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-700">
+        <p class="text-gray-400 text-sm mb-2">Join the group:</p>
+        <p class="text-2xl font-bold text-purple-400"><%= @group.name %></p>
+        <p class="text-sm text-gray-400 mt-2">
+          <%= pluralize(@group.members.count, "member") %>
+        </p>
+      </div>
+
+      <% if current_user %>
+        <% if @already_member %>
+          <div class="text-center">
+            <p class="text-green-400 mb-4">You're already a member of this group!</p>
+            <%= link_to "Go to Group", group_path(@group), 
+                class: "block w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold text-center" %>
+          </div>
+        <% else %>
+          <%= button_to "Join Group", accept_invite_path(@group.invite_code), method: :post,
+              class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold" %>
+          <p class="text-sm text-gray-400 text-center mt-4">
+            Signed in as <%= current_user.display_name %>
+          </p>
+        <% end %>
+      <% else %>
+        <div class="space-y-3">
+          <%= link_to "Sign In to Join", new_user_session_path, 
+              class: "block w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold text-center" %>
+          <%= link_to "Create Account", new_user_registration_path, 
+              class: "block w-full bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold text-center" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-8 text-center">
+      <h3 class="text-lg font-semibold mb-3">How it works:</h3>
+      <div class="grid grid-cols-1 gap-3 text-left text-sm text-gray-400">
+        <div class="flex items-start">
+          <span class="text-purple-400 font-bold mr-2">1.</span>
+          <span>Submit your favorite song for the week's category</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-purple-400 font-bold mr-2">2.</span>
+          <span>Vote on other members' submissions (1-10 scale)</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-purple-400 font-bold mr-2">3.</span>
+          <span>Compete across 10-week seasons</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

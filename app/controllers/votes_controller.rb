@@ -13,7 +13,7 @@ class VotesController < ApplicationController
     if @vote.save
       redirect_to group_season_week_path(@group, @season, @week), notice: "Your vote has been recorded!"
     else
-      redirect_to group_season_week_path(@group, @season, @week), 
+      redirect_to group_season_week_path(@group, @season, @week),
                   alert: @vote.errors.full_messages.join(", ")
     end
   end
@@ -38,17 +38,17 @@ class VotesController < ApplicationController
   def check_voting_phase
     @week = @submission.week
     unless @week.voting_phase?
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week), 
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "Voting is not open for this week."
     end
-    
+
     if @week.submissions.exists?(user: current_user, id: @submission.id)
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week), 
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "You cannot vote on your own submission."
     end
-    
+
     if Vote.exists?(submission: @submission, voter: current_user)
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week), 
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "You have already voted on this submission."
     end
   end

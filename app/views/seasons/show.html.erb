@@ -1,2 +1,95 @@
-<h1>Seasons#show</h1>
-<p>Find me in app/views/seasons/show.html.erb</p>
+<div class="max-w-6xl mx-auto">
+  <div class="mb-6">
+    <%= link_to @group, class: "text-purple-400 hover:text-purple-300 inline-flex items-center" do %>
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to <%= @group.name %>
+    <% end %>
+  </div>
+
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-3xl font-bold">Season <%= @season.number %></h1>
+      <% if @season.active %>
+        <span class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold">
+          Active Season
+        </span>
+      <% end %>
+    </div>
+    <p class="text-gray-400">Started <%= @season.start_date.strftime("%B %d, %Y") %></p>
+  </div>
+
+  <%# Season Leaderboard %>
+  <div class="mb-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold">Current Standings</h2>
+      <%= link_to "Full Leaderboard", group_season_leaderboard_path(@group, season_id: @season.id), 
+          class: "text-purple-400 hover:text-purple-300 text-sm" %>
+    </div>
+    
+    <% if @rankings.any? %>
+      <div class="space-y-2">
+        <% @rankings.first(3).each_with_index do |ranking, index| %>
+          <div class="flex items-center justify-between bg-gray-900 rounded p-3">
+            <div class="flex items-center space-x-3">
+              <span class="text-2xl">
+                <%= index == 0 ? "🥇" : index == 1 ? "🥈" : "🥉" %>
+              </span>
+              <span class="font-semibold"><%= ranking.user.display_name %></span>
+            </div>
+            <div class="text-right">
+              <span class="text-xl font-bold text-purple-400"><%= ranking.total_score.round(2) %></span>
+              <span class="text-sm text-gray-400 block">
+                <%= pluralize(ranking.games_played, "game") %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-400 text-center py-4">No submissions yet this season</p>
+    <% end %>
+  </div>
+
+  <%# Weeks %>
+  <div>
+    <h2 class="text-xl font-semibold mb-4">Weeks</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <% @weeks.each do |week| %>
+        <%= link_to group_season_week_path(@group, @season, week), class: "block" do %>
+          <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition border border-gray-700 hover:border-purple-500">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold">Week <%= week.number %></h3>
+              <% if week.submission_phase? %>
+                <span class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-semibold">
+                  Submissions Open
+                </span>
+              <% elsif week.voting_phase? %>
+                <span class="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-semibold">
+                  Voting Open
+                </span>
+              <% elsif week.results_phase? %>
+                <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-semibold">
+                  Results
+                </span>
+              <% end %>
+            </div>
+            
+            <p class="text-purple-400 font-semibold mb-2"><%= week.category %></p>
+            
+            <div class="text-sm text-gray-400">
+              <% if week.submission_phase? %>
+                <p>Submit by <%= week.submission_deadline.strftime("%b %d, %I:%M %p") %></p>
+              <% elsif week.voting_phase? %>
+                <p>Vote by <%= week.voting_deadline.strftime("%b %d, %I:%M %p") %></p>
+              <% else %>
+                <p>Ended <%= week.voting_deadline.strftime("%b %d, %Y") %></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

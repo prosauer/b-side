@@ -8,7 +8,7 @@ class InvitesController < ApplicationController
 
   def accept
     @group = Group.find_by!(invite_code: params[:invite_code])
-    
+
     if @group.members.include?(current_user)
       redirect_to @group, notice: "You are already a member of this group."
     else

@@ -58,7 +58,7 @@ class SubmissionsController < ApplicationController
       @submission = Submission.find(params[:id])
       @group = @submission.week.season.group
     end
-    
+
     unless @group.members.include?(current_user)
       redirect_to root_path, alert: "You must be a member of this group to access this page."
     end
@@ -66,12 +66,12 @@ class SubmissionsController < ApplicationController
 
   def check_submission_phase
     unless @week.submission_phase?
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week), 
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "Submissions are closed for this week."
     end
-    
+
     if @week.submissions.exists?(user: current_user)
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week), 
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "You have already submitted for this week."
     end
   end

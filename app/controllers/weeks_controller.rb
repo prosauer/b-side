@@ -13,7 +13,7 @@ class WeeksController < ApplicationController
     @group = @season.group
     @submissions = @week.submissions.includes(:user, :votes)
     @user_submission = @week.submissions.find_by(user: current_user)
-    
+
     # For voting phase, get submissions the user hasn't voted on yet (excluding their own)
     if @week.voting_phase?
       voted_submission_ids = current_user.votes.joins(:submission).where(submissions: { week_id: @week.id }).pluck(:submission_id)

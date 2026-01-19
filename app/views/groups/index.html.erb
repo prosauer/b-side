@@ -1,2 +1,44 @@
-<h1>Groups#index</h1>
-<p>Find me in app/views/groups/index.html.erb</p>
+<div class="max-w-6xl mx-auto">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-bold">Your Groups</h1>
+    <%= link_to new_group_path, class: "bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold" do %>
+      + Create Group
+    <% end %>
+  </div>
+
+  <% if @groups.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @groups.each do |group| %>
+        <%= link_to group_path(group), class: "block" do %>
+          <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition border border-gray-700 hover:border-purple-500">
+            <h3 class="text-xl font-semibold mb-3"><%= group.name %></h3>
+            <div class="flex items-center justify-between text-sm text-gray-400">
+              <span>
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <%= pluralize(group.members.count, "member") %>
+              </span>
+              <% if group.seasons.active.any? %>
+                <span class="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs">
+                  Active Season
+                </span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-16 bg-gray-800 rounded-lg border border-gray-700">
+      <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+      <h2 class="text-xl font-semibold mb-2 text-gray-300">No groups yet</h2>
+      <p class="text-gray-400 mb-6">Create a group or join one with an invite code</p>
+      <%= link_to new_group_path, class: "inline-block bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold" do %>
+        Create Your First Group
+      <% end %>
+    </div>
+  <% end %>
+</div>
