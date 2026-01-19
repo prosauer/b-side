@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="dark">
   <head>
     <title><%= content_for(:title) || "B-Side Music Challenge" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -24,19 +24,69 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="bg-gray-900 text-gray-100 min-h-screen">
+  <body class="bg-gray-900 text-gray-100 min-h-screen pb-20 md:pb-0">
     <%# Flash messages %>
     <% if notice %>
-      <div class="bg-blue-500 text-white px-4 py-3 mb-4">
-        <%= notice %>
+      <div class="bg-blue-600 text-white px-4 py-3 mb-0 shadow-lg">
+        <div class="container mx-auto">
+          <%= notice %>
+        </div>
       </div>
     <% end %>
     <% if alert %>
-      <div class="bg-red-500 text-white px-4 py-3 mb-4">
-        <%= alert %>
+      <div class="bg-red-600 text-white px-4 py-3 mb-0 shadow-lg">
+        <div class="container mx-auto">
+          <%= alert %>
+        </div>
       </div>
     <% end %>
 
-    <%= yield %>
+    <%# Desktop Navigation %>
+    <% if user_signed_in? %>
+      <nav class="hidden md:block bg-gray-800 border-b border-gray-700">
+        <div class="container mx-auto px-4">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center space-x-8">
+              <%= link_to root_path, class: "text-xl font-bold text-purple-400 hover:text-purple-300" do %>
+                🎵 B-Side
+              <% end %>
+              <%= link_to "Groups", groups_path, class: "text-gray-300 hover:text-white" %>
+            </div>
+            <div class="flex items-center space-x-4">
+              <span class="text-gray-400">
+                <%= current_user.display_name %>
+              </span>
+              <%= button_to "Sign Out", destroy_user_session_path, method: :delete, 
+                  class: "text-gray-300 hover:text-white" %>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+
+    <%# Main Content %>
+    <main class="container mx-auto px-4 py-6">
+      <%= yield %>
+    </main>
+
+    <%# Mobile Bottom Navigation %>
+    <% if user_signed_in? %>
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 shadow-lg">
+        <div class="flex justify-around items-center h-16">
+          <%= link_to root_path, class: "flex flex-col items-center justify-center flex-1 text-gray-400 hover:text-purple-400" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span class="text-xs mt-1">Home</span>
+          <% end %>
+          <%= link_to groups_path, class: "flex flex-col items-center justify-center flex-1 text-gray-400 hover:text-purple-400" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span class="text-xs mt-1">Groups</span>
+          <% end %>
+        </div>
+      </nav>
+    <% end %>
   </body>
 </html>

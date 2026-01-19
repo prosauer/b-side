@@ -1,2 +1,95 @@
-<h1>Groups#show</h1>
-<p>Find me in app/views/groups/show.html.erb</p>
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6">
+    <%= link_to groups_path, class: "text-purple-400 hover:text-purple-300 inline-flex items-center" do %>
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Groups
+    <% end %>
+  </div>
+
+  <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+    <h1 class="text-3xl font-bold mb-8"><%= @group.name %></h1>
+
+    <%# Current Season %>
+    <% if @current_season %>
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Current Season</h2>
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-2xl font-bold text-purple-400">Season <%= @current_season.number %></p>
+              <p class="text-sm text-gray-400 mt-1">Started <%= @current_season.start_date.strftime("%B %d, %Y") %></p>
+            </div>
+            <%= link_to "View Season", group_season_path(@group, @current_season), 
+                class: "bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold" %>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="mb-8 bg-gray-900 rounded-lg p-6 border border-gray-700">
+        <p class="text-gray-400 mb-4">No active season</p>
+        <% if @membership&.admin? %>
+          <%= link_to "Start New Season", new_group_season_path(@group), 
+              class: "bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold inline-block" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Members %>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">
+        Members (<%= @members.count %>)
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <% @members.each do |member| %>
+          <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+            <p class="font-semibold"><%= member.display_name %></p>
+            <% if @group.memberships.find_by(user: member).admin? %>
+              <span class="text-xs text-purple-400">Admin</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Invite Link %>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Invite Friends</h2>
+      <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+        <p class="text-sm text-gray-400 mb-2">Share this link to invite new members:</p>
+        <div class="flex items-center space-x-2">
+          <input type="text" readonly value="<%= join_url(@group.invite_code) %>" 
+                 class="flex-1 bg-gray-800 border border-gray-600 rounded px-4 py-2 text-sm font-mono"
+                 id="invite-link">
+          <button onclick="copyInviteLink()" 
+                  class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-semibold">
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%# Admin Actions %>
+    <% if @membership&.admin? %>
+      <div class="flex space-x-4">
+        <%= link_to "Edit Group", edit_group_path(@group), 
+            class: "text-gray-300 hover:text-white underline" %>
+        <%= link_to "All Seasons", group_seasons_path(@group), 
+            class: "text-gray-300 hover:text-white underline" %>
+        <%= button_to "Delete Group", group_path(@group), method: :delete, 
+            data: { turbo_confirm: "Are you sure? This will delete all seasons, weeks, and submissions." },
+            class: "text-red-400 hover:text-red-300 underline" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function copyInviteLink() {
+  const input = document.getElementById('invite-link');
+  input.select();
+  document.execCommand('copy');
+  alert('Invite link copied to clipboard!');
+}
+</script>

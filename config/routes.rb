@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   # Groups
   resources :groups do
     resources :seasons, only: [ :index, :new, :create, :show ] do
-      resources :weeks, only: [ :index, :show ] do
+      resources :weeks, only: [ :index, :show, :edit, :update ] do
         resources :submissions, only: [ :index, :new, :create, :show ]
       end
     end

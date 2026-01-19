@@ -1,7 +1,65 @@
 class WeeksController < ApplicationController
+  before_action :set_week
+  before_action :require_group_membership
+  before_action :require_group_admin, only: [ :edit, :update ]
+
   def index
+    @season = Season.find(params[:season_id])
+    @weeks = @season.weeks.order(:number)
   end
 
   def show
+    @season = @week.season
+    @group = @season.group
+    @submissions = @week.submissions.includes(:user, :votes)
+    @user_submission = @week.submissions.find_by(user: current_user)
+
+    # For voting phase, get submissions the user hasn't voted on yet (excluding their own)
+    if @week.voting_phase?
+      voted_submission_ids = current_user.votes.joins(:submission).where(submissions: { week_id: @week.id }).pluck(:submission_id)
+      @submissions_to_vote = @submissions.where.not(user: current_user).where.not(id: voted_submission_ids)
+    end
+  end
+
+  def edit
+    @season = @week.season
+    @group = @season.group
+  end
+
+  def update
+    if @week.update(week_params)
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week), notice: "Week category updated."
+    else
+      @season = @week.season
+      @group = @season.group
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def set_week
+    @week = Week.find(params[:id])
+  end
+
+  def week_params
+    params.require(:week).permit(:category)
+  end
+
+  def require_group_admin
+    @week = Week.find(params[:id])
+    @group = @week.season.group
+    membership = @group.memberships.find_by(user: current_user)
+    unless membership&.admin?
+      redirect_to root_path, alert: "You must be an admin of this group to perform this action."
+    end
+  end
+
+  def require_group_membership
+    @week = Week.find(params[:id])
+    @group = @week.season.group
+    unless @group.members.include?(current_user)
+      redirect_to root_path, alert: "You must be a member of this group to access this page."
+    end
   end
 end

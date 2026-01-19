@@ -1,2 +1,74 @@
-<h1>Submissions#new</h1>
-<p>Find me in app/views/submissions/new.html.erb</p>
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <%= link_to group_season_week_path(@group, @season, @week), class: "text-purple-400 hover:text-purple-300 inline-flex items-center" do %>
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Week <%= @week.number %>
+    <% end %>
+  </div>
+
+  <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+    <h1 class="text-3xl font-bold mb-2">Submit Your Song</h1>
+    <p class="text-purple-400 font-semibold text-lg mb-8"><%= @week.category %></p>
+
+    <div class="bg-blue-500/10 border border-blue-500 rounded-lg p-4 mb-6">
+      <p class="text-blue-300 text-sm">
+        <strong>Deadline:</strong> <%= @week.submission_deadline.strftime("%B %d at %I:%M %p") %>
+        <br>
+        <strong>Time remaining:</strong> <%= distance_of_time_in_words(Time.current, @week.submission_deadline) %>
+      </p>
+    </div>
+
+    <%= form_with model: @submission, url: group_season_week_submissions_path(@group, @season, @week), class: "space-y-6" do |f| %>
+      <% if @submission.errors.any? %>
+        <div class="bg-red-500/10 border border-red-500 rounded-lg p-4">
+          <h3 class="font-semibold text-red-400 mb-2">
+            <%= pluralize(@submission.errors.count, "error") %> prevented this submission from being saved:
+          </h3>
+          <ul class="list-disc list-inside text-red-300">
+            <% @submission.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :song_title, "Song Title", class: "block text-sm font-semibold mb-2" %>
+        <%= f.text_field :song_title, required: true,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
+            placeholder: "Enter the song title" %>
+      </div>
+
+      <div>
+        <%= f.label :artist, "Artist", class: "block text-sm font-semibold mb-2" %>
+        <%= f.text_field :artist, required: true,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
+            placeholder: "Enter the artist name" %>
+      </div>
+
+      <div>
+        <%= f.label :song_url, "Streaming Link (optional)", class: "block text-sm font-semibold mb-2" %>
+        <%= f.url_field :song_url,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
+            placeholder: "Spotify, Apple Music, YouTube, etc." %>
+        <p class="text-sm text-gray-400 mt-1">
+          Share a link so others can easily listen to your submission
+        </p>
+      </div>
+
+      <div>
+        <%= f.label :comment, "Your Comment (optional)", class: "block text-sm font-semibold mb-2" %>
+        <%= f.text_area :comment, rows: 4,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
+            placeholder: "Why did you choose this song? Any interesting story behind it?" %>
+      </div>
+
+      <div class="flex items-center justify-between pt-4">
+        <%= f.submit "Submit Song", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
+        <%= link_to "Cancel", group_season_week_path(@group, @season, @week), class: "text-gray-400 hover:text-white" %>
+      </div>
+    <% end %>
+  </div>
+</div>
