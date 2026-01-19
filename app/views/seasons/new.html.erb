@@ -1,6 +1,6 @@
 <div class="max-w-2xl mx-auto">
   <div class="mb-6">
-    <%= link_to @group, class: "text-purple-400 hover:text-purple-300 inline-flex items-center" do %>
+    <%= link_to @group, class: "text-soundcloud-orange hover:text-soundcloud-coral inline-flex items-center font-semibold transition-colors" do %>
       <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
@@ -8,12 +8,12 @@
     <% end %>
   </div>
 
-  <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
-    <h1 class="text-3xl font-bold mb-6">Start New Season</h1>
+  <div class="glass-card p-8">
+    <h1 class="text-4xl font-bold mb-8 text-white">🚀 Start New Season</h1>
 
-    <div class="bg-blue-500/10 border border-blue-500 rounded-lg p-4 mb-6">
-      <h3 class="font-semibold text-blue-400 mb-2">What happens when you start a season?</h3>
-      <ul class="list-disc list-inside text-blue-300 text-sm space-y-1">
+    <div class="glass-medium border border-blue-500/30 rounded-2xl p-6 mb-8 bg-blue-500/10">
+      <h3 class="font-bold text-blue-400 mb-4 text-lg">What happens when you start a season?</h3>
+      <ul class="list-disc list-inside text-blue-300 space-y-2 font-medium">
         <li>10 weeks will be created automatically</li>
         <li>Any previous active season will be deactivated</li>
         <li>You'll need to set the category for each week</li>
@@ -22,14 +22,14 @@
     </div>
 
     <%= form_with url: group_seasons_path(@group), method: :post, class: "space-y-6" do |f| %>
-      <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-        <p class="text-lg mb-2">Season <%= (@group.seasons.maximum(:number) || 0) + 1 %></p>
-        <p class="text-sm text-gray-400">Start date: <%= Date.current.strftime("%B %d, %Y") %></p>
+      <div class="glass-medium rounded-2xl p-6 border border-soundcloud-orange/30 bg-soundcloud-orange/10">
+        <p class="text-2xl font-bold mb-2 text-soundcloud-orange">Season <%= (@group.seasons.maximum(:number) || 0) + 1 %></p>
+        <p class="text-sm text-gray-400 font-semibold">Start date: <%= Date.current.strftime("%B %d, %Y") %></p>
       </div>
 
       <div class="flex items-center justify-between pt-4">
-        <%= f.submit "Start Season", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
-        <%= link_to "Cancel", @group, class: "text-gray-400 hover:text-white" %>
+        <%= f.submit "Start Season", class: "btn-primary cursor-pointer" %>
+        <%= link_to "Cancel", @group, class: "text-gray-400 hover:text-white font-semibold transition-colors" %>
       </div>
     <% end %>
   </div>
