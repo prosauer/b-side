@@ -117,10 +117,8 @@
                     </p>
                   <% end %>
                   <% if submission.song_url.present? && submission.song_url.start_with?("http://", "https://") %>
-                    <%= link_to submission.song_url, target: "_blank", rel: "noopener noreferrer",
-                        class: "inline-block mt-2 text-blue-400 hover:text-blue-300 text-sm" do %>
-                      🔗 Listen on streaming service
-                    <% end %>
+                    <%= link_to "🔗 Listen on streaming service", submission.song_url, target: "_blank", rel: "noopener noreferrer",
+                        class: "inline-block mt-2 text-blue-400 hover:text-blue-300 text-sm" %>
                   <% end %>
                 </div>
 
@@ -190,10 +188,8 @@
                       </p>
                     <% end %>
                     <% if submission.song_url.present? && submission.song_url.start_with?("http://", "https://") %>
-                      <%= link_to submission.song_url, target: "_blank", rel: "noopener noreferrer",
-                          class: "inline-block text-blue-400 hover:text-blue-300 text-sm" do %>
-                        🔗 Listen
-                      <% end %>
+                      <%= link_to "🔗 Listen", submission.song_url, target: "_blank", rel: "noopener noreferrer",
+                          class: "inline-block text-blue-400 hover:text-blue-300 text-sm" %>
                     <% end %>
                   </div>
                   <div class="text-right ml-4">
