@@ -6,9 +6,21 @@ class Submission < ApplicationRecord
   # Validations
   validates :song_title, :artist, presence: true
   validates :user_id, uniqueness: { scope: :week_id, message: "can only submit one song per week" }
+  validate :song_url_must_be_safe
 
   # Instance methods
   def average_score
     votes.average(:score)&.round(2) || 0
+  end
+
+  private
+
+  def song_url_must_be_safe
+    return if song_url.blank?
+
+    uri = URI.parse(song_url) rescue nil
+    unless uri && uri.is_a?(URI::HTTP) && uri.host.present?
+      errors.add(:song_url, "must be a valid http(s) URL")
+    end
   end
 end

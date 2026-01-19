@@ -187,9 +187,13 @@
                         "<%= submission.comment %>"
                       </p>
                     <% end %>
-                    <% if submission.song_url.present? && submission.song_url.start_with?("http://", "https://") %>
-                      <%= link_to "🔗 Listen", submission.song_url, target: "_blank", rel: "noopener noreferrer",
-                          class: "inline-block text-blue-400 hover:text-blue-300 text-sm" %>
+                    <% if submission.song_url.present? %>
+                      <%= link_to submission.song_url,
+                                  target: "_blank",
+                                  rel: "noopener noreferrer",
+                                  class: "inline-block text-blue-400 hover:text-blue-300 text-sm" do %>
+                        🔗 Listen
+                      <% end %>
                     <% end %>
                   </div>
                   <div class="text-right ml-4">
