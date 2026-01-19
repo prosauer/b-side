@@ -10,12 +10,31 @@ class SeasonsController < ApplicationController
   def show
     @season = @group.seasons.find(params[:id])
     @weeks = @season.weeks.order(:number)
-    @submissions = Submission.joins(:week).where(weeks: { season_id: @season.id })
-                             .group(:user_id)
-                             .select("user_id, SUM(
-                               (SELECT AVG(votes.score) FROM votes WHERE votes.submission_id = submissions.id)
-                             ) as total_score, COUNT(DISTINCT submissions.id) as games_played")
-                             .order("total_score DESC NULLS LAST")
+
+    # Calculate cumulative standings for the season
+    submissions = Submission.joins(:week).where(weeks: { season_id: @season.id }).includes(:user, :votes)
+
+    user_stats = {}
+    submissions.each do |submission|
+      user_id = submission.user_id
+      user_stats[user_id] ||= {
+        user: submission.user,
+        total_score: 0,
+        games_played: 0,
+        average_score: 0
+      }
+
+      avg_score = submission.votes.average(:score) || 0
+      user_stats[user_id][:total_score] += avg_score
+      user_stats[user_id][:games_played] += 1
+    end
+
+    # Calculate averages
+    user_stats.each do |user_id, stats|
+      stats[:average_score] = stats[:games_played] > 0 ? (stats[:total_score] / stats[:games_played]).round(2) : 0
+    end
+
+    @rankings = user_stats.values.sort_by { |s| -s[:total_score] }
   end
 
   def new

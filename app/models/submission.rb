@@ -6,4 +6,9 @@ class Submission < ApplicationRecord
   # Validations
   validates :song_title, :artist, presence: true
   validates :user_id, uniqueness: { scope: :week_id, message: "can only submit one song per week" }
+
+  # Instance methods
+  def average_score
+    votes.average(:score)&.round(2) || 0
+  end
 end
