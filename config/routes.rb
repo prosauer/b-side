@@ -9,36 +9,27 @@ Rails.application.routes.draw do
   
   # Groups
   resources :groups do
-    resources :seasons, only: [ :index, :new, :create, :show ]
+    resources :seasons, only: [ :index, :new, :create, :show ] do
+      resources :weeks, only: [ :index, :show ] do
+        resources :submissions, only: [ :index, :new, :create, :show ]
+      end
+    end
     member do
       get :invite
     end
+    # Leaderboards
+    get "leaderboard/weekly/:week_id", to: "leaderboards#weekly", as: :weekly_leaderboard
+    get "leaderboard/season/:season_id", to: "leaderboards#season", as: :season_leaderboard
+    get "leaderboard/all_time", to: "leaderboards#all_time", as: :all_time_leaderboard
   end
   
   # Invite flow
   get "join/:invite_code", to: "invites#show", as: :join
   post "join/:invite_code", to: "invites#accept", as: :accept_invite
   
-  # Seasons nested under groups (additional routes)
-  resources :seasons, only: [] do
-    resources :weeks, only: [ :index, :show ]
-  end
-  
-  # Weeks
-  resources :weeks, only: [] do
-    resources :submissions, only: [ :index, :new, :create, :show ]
-  end
-  
-  # Votes
+  # Votes (nested under submissions)
   resources :submissions, only: [] do
     resources :votes, only: [ :create ]
-  end
-  
-  # Leaderboards
-  resources :groups, only: [] do
-    get "leaderboard/weekly/:week_id", to: "leaderboards#weekly", as: :weekly_leaderboard
-    get "leaderboard/season/:season_id", to: "leaderboards#season", as: :season_leaderboard
-    get "leaderboard/all_time", to: "leaderboards#all_time", as: :all_time_leaderboard
   end
   
   # Health check

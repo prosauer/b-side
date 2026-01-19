@@ -39,7 +39,7 @@
                 <p class="text-sm text-gray-400">Vote by <%= week.voting_deadline.strftime("%B %d, %I:%M %p") %></p>
               <% end %>
               
-              <%= link_to "View Week", week_path(week), class: "inline-block mt-4 text-blue-400 hover:text-blue-300" %>
+              <%= link_to "View Week", group_season_week_path(week.season.group, week.season, week), class: "inline-block mt-4 text-blue-400 hover:text-blue-300" %>
             </div>
           <% end %>
         </div>
