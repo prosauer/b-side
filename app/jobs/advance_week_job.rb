@@ -12,12 +12,12 @@ class AdvanceWeekJob < ApplicationJob
     elsif current_week.nil? || current_week.results_phase?
       # Create next week
       next_number = current_week ? current_week.number + 1 : 1
-      
+
       # TODO: Set appropriate deadlines and category
       # This would typically be set by an admin, but here's a placeholder:
       submission_deadline = Time.current + 3.days
       voting_deadline = submission_deadline + 3.days
-      
+
       Week.create!(
         season: season,
         number: next_number,

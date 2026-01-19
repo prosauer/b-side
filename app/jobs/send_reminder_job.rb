@@ -11,7 +11,7 @@ class SendReminderJob < ApplicationJob
       # Send reminder to members who haven't submitted
       submitted_user_ids = week.submissions.pluck(:user_id)
       members_to_remind = members.where.not(id: submitted_user_ids)
-      
+
       members_to_remind.each do |member|
         # TODO: Send email reminder
         # ReminderMailer.submission_reminder(member, week).deliver_later
