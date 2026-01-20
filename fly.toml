@@ -1,5 +1,5 @@
 # fly.toml for B-Side deployment on Fly.io
-app = "b-side"
+app = "b-side-music"
 primary_region = "iad"
 console_command = "/rails/bin/rails console"
 
