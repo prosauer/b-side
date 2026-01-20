@@ -53,12 +53,11 @@ RUN bundle install && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
     bundle exec bootsnap precompile -j 1 --gemfile
 
-# Install node modules
-COPY package.json yarn.lock ./
-RUN yarn install --immutable
-
 # Copy application code
 COPY . .
+
+# Install node modules when package metadata is present
+RUN if [ -f package.json ] && [ -f yarn.lock ]; then yarn install --immutable; fi
 
 # Precompile bootsnap code for faster boot times.
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
