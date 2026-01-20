@@ -53,7 +53,6 @@ RUN bundle install && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
     bundle exec bootsnap precompile -j 1 --gemfile
 
-# Install node modules
 COPY package.json ./
 RUN yarn install
 
