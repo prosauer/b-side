@@ -16,8 +16,12 @@ class WeeksController < ApplicationController
 
     # For voting phase, get submissions the user hasn't voted on yet (excluding their own)
     if @week.voting_phase?
-      voted_submission_ids = current_user.votes.joins(:submission).where(submissions: { week_id: @week.id }).pluck(:submission_id)
-      @submissions_to_vote = @submissions.where.not(user: current_user).where.not(id: voted_submission_ids)
+      @submissions_to_vote = @submissions.where.not(user: current_user)
+      @user_votes = current_user.votes.joins(:submission)
+                               .where(submissions: { week_id: @week.id })
+                               .index_by(&:submission_id)
+      @points_used = @user_votes.values.sum(&:score)
+      @remaining_points = [Week::TOTAL_POINTS_PER_USER - @points_used, 0].max
     end
   end
 
@@ -28,7 +32,7 @@ class WeeksController < ApplicationController
 
   def update
     if @week.update(week_params)
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week), notice: "Week category updated."
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week), notice: "Week updated."
     else
       @season = @week.season
       @group = @season.group
@@ -43,7 +47,7 @@ class WeeksController < ApplicationController
   end
 
   def week_params
-    params.require(:week).permit(:category)
+    params.require(:week).permit(:category, :submission_deadline, :voting_deadline)
   end
 
   def require_group_admin

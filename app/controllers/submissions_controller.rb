@@ -14,7 +14,7 @@ class SubmissionsController < ApplicationController
     @season = @week.season
     @group = @season.group
     @votes = @submission.votes.includes(:voter)
-    @average_score = @votes.average(:score)&.round(2)
+    @total_points = @votes.sum(:score)
   end
 
   def new

@@ -4,10 +4,7 @@ class ScoringService
     votes = submission.votes
     return 0 if votes.empty?
 
-    # Calculate average score
-    total = votes.sum(:score)
-    average = total.to_f / votes.count
-    average.round(2)
+    votes.sum(:score)
   end
 
   def self.calculate_weekly_scores(week)

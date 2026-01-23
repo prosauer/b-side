@@ -45,7 +45,7 @@
 
     <% if @group.memberships.find_by(user: current_user).admin? %>
       <div class="mt-4 pt-4 border-t border-gray-700">
-        <%= link_to "Edit Category", edit_group_season_week_path(@group, @season, @week), 
+        <%= link_to "Edit Week", edit_group_season_week_path(@group, @season, @week), 
             class: "text-purple-400 hover:text-purple-300 text-sm underline" %>
       </div>
     <% end %>
@@ -102,10 +102,26 @@
         <p class="text-gray-400 mb-4">
           Time remaining: <%= distance_of_time_in_words(Time.current, @week.voting_deadline) %>
         </p>
+        <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 mb-4 text-sm text-gray-300">
+          <p class="font-semibold text-purple-300 mb-1">
+            Points remaining: <%= @remaining_points %> / <%= Week::TOTAL_POINTS_PER_USER %>
+          </p>
+          <p>
+            You can give up to <%= @group.max_points_per_song %> points per song.
+          </p>
+          <% if @remaining_points.zero? %>
+            <p class="text-green-400 mt-2">
+              You've submitted all your points and can no longer vote or comment this week.
+            </p>
+          <% end %>
+        </div>
 
         <% if @submissions_to_vote.any? %>
           <div class="space-y-4">
             <% @submissions_to_vote.each do |submission| %>
+              <% user_vote = @user_votes[submission.id] %>
+              <% points_for_song = user_vote&.score.to_i %>
+              <% can_add_point = @remaining_points.positive? && points_for_song < @group.max_points_per_song %>
               <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
                 <div class="mb-4">
                   <p class="text-lg font-semibold mb-1"><%= submission.song_title %></p>
@@ -126,19 +142,33 @@
                     <% end %>
                 </div>
 
-                <%= form_with url: submission_votes_path(submission), method: :post, class: "space-y-3" do |f| %>
-                  <div>
-                    <%= f.label :score, "Your Score (1-10)", class: "block text-sm font-semibold mb-2" %>
-                    <%= f.number_field :score, min: 1, max: 10, required: true,
-                        class: "w-full bg-gray-800 border border-gray-600 rounded px-4 py-2" %>
-                  </div>
-                  <div>
-                    <%= f.label :comment, "Comment (optional)", class: "block text-sm font-semibold mb-2" %>
-                    <%= f.text_area :comment, rows: 2,
-                        class: "w-full bg-gray-800 border border-gray-600 rounded px-4 py-2", 
-                        placeholder: "Share your thoughts..." %>
-                  </div>
-                  <%= f.submit "Submit Vote", class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-semibold cursor-pointer" %>
+                <div class="flex items-center justify-between text-sm text-gray-300 mb-3">
+                  <span>Your points: <%= points_for_song %> / <%= @group.max_points_per_song %></span>
+                  <% if @remaining_points.zero? %>
+                    <span class="text-green-400">All points submitted for the week.</span>
+                  <% end %>
+                </div>
+
+                <% if can_add_point %>
+                  <%= form_with url: submission_votes_path(submission), method: :post, class: "space-y-3" do |f| %>
+                    <% if user_vote.nil? %>
+                      <div>
+                        <%= f.label :comment, "Comment (optional)", class: "block text-sm font-semibold mb-2" %>
+                        <%= f.text_area :comment, rows: 2,
+                            class: "w-full bg-gray-800 border border-gray-600 rounded px-4 py-2",
+                            placeholder: "Share your thoughts..." %>
+                      </div>
+                    <% end %>
+                    <%= f.submit "+1 Point", class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-semibold cursor-pointer" %>
+                  <% end %>
+                <% else %>
+                  <p class="text-sm text-gray-500 italic">
+                    <% if points_for_song >= @group.max_points_per_song %>
+                      You've reached the max points for this song.
+                    <% elsif @remaining_points.zero? %>
+                      You've submitted all points for the week.
+                    <% end %>
+                  </p>
                 <% end %>
               </div>
             <% end %>
@@ -146,7 +176,7 @@
         <% else %>
           <div class="bg-green-500/10 border border-green-500 rounded-lg p-4">
             <p class="text-green-400 text-center">
-              ✓ You've voted on all submissions! Check back after the voting deadline for results.
+              ✓ No submissions to vote on yet. Check back after the submission deadline.
             </p>
           </div>
         <% end %>
@@ -166,7 +196,7 @@
 
         <% if @submissions.any? %>
           <div class="space-y-4">
-            <% @submissions.sort_by { |s| -(s.votes.average(:score) || 0) }.each_with_index do |submission, index| %>
+            <% @submissions.sort_by { |s| -s.total_points }.each_with_index do |submission, index| %>
               <div class="bg-gray-900 rounded-lg p-4 border <%= index == 0 ? 'border-yellow-500' : 'border-gray-700' %>">
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
@@ -202,10 +232,10 @@
                   </div>
                   <div class="text-right ml-4">
                     <p class="text-3xl font-bold text-purple-400">
-                      <%= (submission.votes.average(:score) || 0).round(2) %>
+                      <%= submission.total_points %>
                     </p>
                     <p class="text-xs text-gray-400">
-                      <%= pluralize(submission.votes.count, "vote") %>
+                      <%= pluralize(submission.votes.sum(:score), "point") %>
                     </p>
                   </div>
                 </div>
@@ -213,12 +243,12 @@
                 <%# Show votes/comments %>
                 <% if submission.votes.any? %>
                   <div class="mt-4 pt-4 border-t border-gray-800">
-                    <p class="text-sm font-semibold mb-2 text-gray-400">Votes:</p>
+                    <p class="text-sm font-semibold mb-2 text-gray-400">Points:</p>
                     <div class="space-y-2">
                       <% submission.votes.includes(:voter).each do |vote| %>
                         <div class="text-sm bg-gray-800 p-2 rounded">
                           <span class="font-semibold"><%= vote.voter.display_name %>:</span>
-                          <span class="text-purple-400"><%= vote.score %>/10</span>
+                          <span class="text-purple-400"><%= pluralize(vote.score, "point") %></span>
                           <% if vote.comment.present? %>
                             <p class="text-gray-400 mt-1 italic">"<%= vote.comment %>"</p>
                           <% end %>

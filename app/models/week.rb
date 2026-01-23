@@ -1,4 +1,6 @@
 class Week < ApplicationRecord
+  TOTAL_POINTS_PER_USER = 6
+
   belongs_to :season
   has_many :submissions, dependent: :destroy
 

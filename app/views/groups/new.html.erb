@@ -30,6 +30,15 @@
         <%= f.text_field :name, class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", placeholder: "My Music Group" %>
       </div>
 
+      <div>
+        <%= f.label :max_points_per_song, "Max Points Per Song", class: "block text-sm font-semibold mb-2" %>
+        <%= f.number_field :max_points_per_song, min: 1, max: Week::TOTAL_POINTS_PER_USER,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500" %>
+        <p class="text-sm text-gray-400 mt-2">
+          Each member gets <%= Week::TOTAL_POINTS_PER_USER %> points per week to distribute.
+        </p>
+      </div>
+
       <div class="flex items-center justify-between pt-4">
         <%= f.submit "Create Group", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
         <%= link_to "Cancel", groups_path, class: "text-gray-400 hover:text-white" %>

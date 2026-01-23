@@ -7,6 +7,11 @@ class Group < ApplicationRecord
   # Validations
   validates :name, presence: true
   validates :invite_code, uniqueness: true, allow_nil: true
+  validates :max_points_per_song, numericality: {
+    only_integer: true,
+    greater_than: 0,
+    less_than_or_equal_to: Week::TOTAL_POINTS_PER_USER
+  }
 
   # Token generation
   has_secure_token :invite_code

@@ -27,7 +27,7 @@
                 </p>
                 <div class="text-sm text-gray-400">
                   <p><%= pluralize(ranking[:games_played], "game") %></p>
-                  <p>Avg: <%= ranking[:average_score] %></p>
+                  <p>Avg points: <%= ranking[:average_score] %></p>
                 </div>
               </div>
             </div>
@@ -57,7 +57,7 @@
                   <p class="font-bold text-lg"><%= ranking[:user].display_name %></p>
                   <p class="text-sm text-gray-400">
                     <%= pluralize(ranking[:games_played], "game") %> played • 
-                    <%= ranking[:average_score] %> avg
+                    <%= ranking[:average_score] %> avg points
                   </p>
                 </div>
               </div>

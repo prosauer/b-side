@@ -9,7 +9,7 @@
   </div>
 
   <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
-    <h1 class="text-3xl font-bold mb-8">Edit Week <%= @week.number %> Category</h1>
+    <h1 class="text-3xl font-bold mb-8">Edit Week <%= @week.number %></h1>
 
     <%= form_with model: @week, url: group_season_week_path(@group, @season, @week), method: :patch, class: "space-y-6" do |f| %>
       <% if @week.errors.any? %>
@@ -34,8 +34,20 @@
         </p>
       </div>
 
+      <div>
+        <%= f.label :submission_deadline, "Submission Deadline", class: "block text-sm font-semibold mb-2" %>
+        <%= f.datetime_field :submission_deadline,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500" %>
+      </div>
+
+      <div>
+        <%= f.label :voting_deadline, "Voting Deadline", class: "block text-sm font-semibold mb-2" %>
+        <%= f.datetime_field :voting_deadline,
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500" %>
+      </div>
+
       <div class="flex items-center justify-between pt-4">
-        <%= f.submit "Update Category", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
+        <%= f.submit "Update Week", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
         <%= link_to "Cancel", group_season_week_path(@group, @season, @week), class: "text-gray-400 hover:text-white" %>
       </div>
     <% end %>

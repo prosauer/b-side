@@ -11,10 +11,9 @@ class LeaderboardsController < ApplicationController
       {
         submission: submission,
         user: submission.user,
-        average_score: submission.votes.average(:score)&.round(2) || 0,
-        vote_count: submission.votes.count
+        total_points: submission.votes.sum(:score)
       }
-    end.sort_by { |r| -r[:average_score] }
+    end.sort_by { |r| -r[:total_points] }
   end
 
   def season
@@ -33,8 +32,8 @@ class LeaderboardsController < ApplicationController
         average_score: 0
       }
 
-      avg_score = submission.votes.average(:score) || 0
-      user_stats[user_id][:total_score] += avg_score
+      points = submission.votes.sum(:score)
+      user_stats[user_id][:total_score] += points
       user_stats[user_id][:games_played] += 1
     end
 
@@ -61,8 +60,8 @@ class LeaderboardsController < ApplicationController
         seasons_played: Set.new
       }
 
-      avg_score = submission.votes.average(:score) || 0
-      user_stats[user_id][:total_score] += avg_score
+      points = submission.votes.sum(:score)
+      user_stats[user_id][:total_score] += points
       user_stats[user_id][:games_played] += 1
       user_stats[user_id][:seasons_played] << submission.week.season_id
     end

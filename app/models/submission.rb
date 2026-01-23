@@ -9,8 +9,8 @@ class Submission < ApplicationRecord
   validate :song_url_must_be_safe
 
   # Instance methods
-  def average_score
-    votes.average(:score)&.round(2) || 0
+  def total_points
+    votes.sum(:score)
   end
 
   private

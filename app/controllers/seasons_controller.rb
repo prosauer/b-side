@@ -24,8 +24,8 @@ class SeasonsController < ApplicationController
         average_score: 0
       }
 
-      avg_score = submission.votes.average(:score) || 0
-      user_stats[user_id][:total_score] += avg_score
+      points = submission.votes.sum(:score)
+      user_stats[user_id][:total_score] += points
       user_stats[user_id][:games_played] += 1
     end
 

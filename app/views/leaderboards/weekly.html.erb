@@ -24,10 +24,10 @@
                 </div>
                 <p class="font-bold text-lg mb-1"><%= ranking[:user].display_name %></p>
                 <p class="text-3xl font-bold text-purple-400 mb-1">
-                  <%= ranking[:average_score] %>
+                  <%= ranking[:total_points] %>
                 </p>
                 <p class="text-sm text-gray-400">
-                  <%= pluralize(ranking[:vote_count], "vote") %>
+                  <%= pluralize(ranking[:total_points], "point") %>
                 </p>
               </div>
             </div>
@@ -60,8 +60,8 @@
                 </div>
               </div>
               <div class="text-right">
-                <p class="text-3xl font-bold text-purple-400"><%= ranking[:average_score] %></p>
-                <p class="text-xs text-gray-400"><%= pluralize(ranking[:vote_count], "vote") %></p>
+                <p class="text-3xl font-bold text-purple-400"><%= ranking[:total_points] %></p>
+                <p class="text-xs text-gray-400"><%= pluralize(ranking[:total_points], "point") %></p>
               </div>
             </div>
           </div>
