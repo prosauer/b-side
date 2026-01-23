@@ -1,0 +1,37 @@
+<div class="max-w-md mx-auto">
+  <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+    <h1 class="text-3xl font-bold mb-6">Sign Up</h1>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), class: "space-y-6") do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :email, class: "block text-sm font-semibold mb-2" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email",
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500" %>
+      </div>
+
+      <div>
+        <%= f.label :password, class: "block text-sm font-semibold mb-2" %>
+        <%= f.password_field :password, autocomplete: "new-password",
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500" %>
+        <% if @minimum_password_length %>
+          <p class="text-sm text-gray-400 mt-2">
+            <%= @minimum_password_length %> characters minimum
+          </p>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, class: "block text-sm font-semibold mb-2" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500" %>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <%= f.submit "Create Account", class: "bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold cursor-pointer" %>
+        <%= link_to "Already have an account?", new_session_path(resource_name), class: "text-sm text-purple-400 hover:text-purple-300" %>
+      </div>
+    <% end %>
+  </div>
+</div>
