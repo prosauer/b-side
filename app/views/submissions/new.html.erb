@@ -20,7 +20,13 @@
       </p>
     </div>
 
-    <%= form_with model: @submission, url: group_season_week_submissions_path(@group, @season, @week), class: "space-y-6" do |f| %>
+    <%= form_with model: @submission,
+                  url: group_season_week_submissions_path(@group, @season, @week),
+                  class: "space-y-6",
+                  data: {
+                    controller: "tidal-submission",
+                    "tidal-submission-lookup-url-value": lookup_group_season_week_submissions_path(@group, @season, @week)
+                  } do |f| %>
       <% if @submission.errors.any? %>
         <div class="bg-red-500/10 border border-red-500 rounded-lg p-4">
           <h3 class="font-semibold text-red-400 mb-2">
@@ -35,27 +41,32 @@
       <% end %>
 
       <div>
-        <%= f.label :song_title, "Song Title", class: "block text-sm font-semibold mb-2" %>
-        <%= f.text_field :song_title, required: true,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Enter the song title" %>
-      </div>
-
-      <div>
-        <%= f.label :artist, "Artist", class: "block text-sm font-semibold mb-2" %>
-        <%= f.text_field :artist, required: true,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Enter the artist name" %>
-      </div>
-
-      <div>
-        <%= f.label :song_url, "Streaming Link (optional)", class: "block text-sm font-semibold mb-2" %>
+        <%= f.label :song_url, "TIDAL Track URL", class: "block text-sm font-semibold mb-2" %>
         <%= f.url_field :song_url,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Spotify, Apple Music, YouTube, etc." %>
+            required: true,
+            data: { "tidal-submission-target": "url", action: "blur->tidal-submission#lookup" },
+            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500",
+            placeholder: "https://tidal.com/browse/track/123456" %>
         <p class="text-sm text-gray-400 mt-1">
-          Share a link so others can easily listen to your submission
+          Paste a TIDAL track URL to automatically fetch the song details.
         </p>
+      </div>
+
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
+        <div class="flex items-start gap-4">
+          <div class="h-16 w-16 bg-gray-800 rounded-md overflow-hidden flex items-center justify-center text-gray-500 text-xs">
+            <img data-tidal-submission-target="cover"
+                 alt="Album art preview"
+                 class="hidden h-full w-full object-cover" />
+            <span data-tidal-submission-target="coverPlaceholder">No art</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-xs uppercase text-gray-500 mb-1">Preview</p>
+            <p class="text-lg font-semibold" data-tidal-submission-target="title">Song title will appear here</p>
+            <p class="text-purple-400" data-tidal-submission-target="artist">Artist will appear here</p>
+            <p class="text-sm text-gray-400 mt-2" data-tidal-submission-target="status"></p>
+          </div>
+        </div>
       </div>
 
       <div>

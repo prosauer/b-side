@@ -6,6 +6,10 @@ class TidalService
   AUTH_URL = "https://auth.tidal.com/v1/oauth2/token"
   API_BASE_URL = "https://api.tidal.com/v1"
   PLAYLIST_BASE_URL = "https://tidal.com/browse/playlist"
+  TRACK_URL_PREFIXES = [
+    "https://tidal.com/track/",
+    "https://tidal.com/browse/track/"
+  ].freeze
 
   def initialize
     @client_id = ENV.fetch("TIDAL_CLIENT_ID", nil)
@@ -36,6 +40,22 @@ class TidalService
     # TODO: Implement track search
     # Returns tidal_id
     { tidal_id: nil }
+  end
+
+  def track_details_from_url(url)
+    track_id = extract_track_id(url)
+    return nil unless track_id
+
+    token = access_token
+    return nil unless token
+
+    details = fetch_track_details(track_id, token)
+    return nil unless details
+
+    details.merge(
+      tidal_id: track_id,
+      song_url: normalize_track_url(track_id)
+    )
   end
 
   private
@@ -89,6 +109,26 @@ class TidalService
     nil
   end
 
+  def fetch_track_details(track_id, token)
+    uri = build_api_uri("/tracks/#{track_id}", { "countryCode" => @country_code })
+    request = Net::HTTP::Get.new(uri)
+    request["Authorization"] = "Bearer #{token}"
+    request["Accept"] = "application/json"
+
+    response = perform_request(uri, request)
+    return nil unless response&.is_a?(Net::HTTPSuccess)
+
+    body = JSON.parse(response.body)
+    {
+      song_title: body["title"],
+      artist: body.dig("artist", "name"),
+      album_art_url: build_album_art_url(body.dig("album", "cover"))
+    }
+  rescue JSON::ParserError => error
+    Rails.logger.warn("Tidal track parse error: #{error.message}")
+    nil
+  end
+
   def add_tracks_to_playlist(playlist_id, tracks, token)
     uri = build_api_uri("/playlists/#{playlist_id}/items", {
       "countryCode" => @country_code,
@@ -103,6 +143,27 @@ class TidalService
 
     Rails.logger.warn("Tidal add tracks failed: #{response&.code} #{response&.body}")
     false
+  end
+
+  def extract_track_id(url)
+    uri = URI.parse(url.to_s) rescue nil
+    return nil unless uri&.host&.include?("tidal.com")
+
+    path = uri.path.to_s
+    return path.split("/").last if path.include?("/track/") && path.split("/").last.present?
+
+    nil
+  end
+
+  def normalize_track_url(track_id)
+    "#{TRACK_URL_PREFIXES.last}#{track_id}"
+  end
+
+  def build_album_art_url(cover_id)
+    return nil if cover_id.blank?
+
+    formatted_cover = cover_id.tr("-", "/")
+    "https://resources.tidal.com/images/#{formatted_cover}/640x640.jpg"
   end
 
   def build_api_uri(path, params = {})
