@@ -4,7 +4,7 @@ class Submission < ApplicationRecord
   has_many :votes, dependent: :destroy
 
   # Validations
-  validates :song_title, :artist, :song_url, presence: true
+  validates :song_url, presence: true
   validates :user_id, uniqueness: { scope: :week_id, message: "can only submit one song per week" }
   validate :song_url_must_be_tidal_track
 
