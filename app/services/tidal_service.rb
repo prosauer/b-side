@@ -121,7 +121,7 @@ class TidalService
     body = JSON.parse(response.body)
     {
       song_title: body["title"],
-      artist: body.dig("artist", "name"),
+      artist: extract_artist_name(body),
       album_art_url: build_album_art_url(body.dig("album", "cover"))
     }
   rescue JSON::ParserError => error
@@ -149,14 +149,17 @@ class TidalService
     uri = URI.parse(url.to_s) rescue nil
     return nil unless uri&.host&.include?("tidal.com")
 
-    path = uri.path.to_s
-    return path.split("/").last if path.include?("/track/") && path.split("/").last.present?
-
-    nil
+    match = uri.path.to_s.match(%r{/track/(\d+)}i)
+    match&.captures&.first
   end
 
   def normalize_track_url(track_id)
     "#{TRACK_URL_PREFIXES.last}#{track_id}"
+  end
+
+  def extract_artist_name(body)
+    body.dig("artist", "name") ||
+      body.dig("artists", 0, "name")
   end
 
   def build_album_art_url(cover_id)

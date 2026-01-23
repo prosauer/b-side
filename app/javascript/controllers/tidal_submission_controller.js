@@ -5,6 +5,16 @@ export default class extends Controller {
   static values = { lookupUrl: String }
 
   async lookup() {
+    if (this.lookupTimeout) {
+      clearTimeout(this.lookupTimeout)
+    }
+
+    this.lookupTimeout = setTimeout(() => {
+      this.performLookup()
+    }, 300)
+  }
+
+  async performLookup() {
     const url = this.urlTarget.value.trim()
     if (!url) {
       this.resetPreview()

@@ -44,7 +44,7 @@
         <%= f.label :song_url, "TIDAL Track URL", class: "block text-sm font-semibold mb-2" %>
         <%= f.url_field :song_url,
             required: true,
-            data: { "tidal-submission-target": "url", action: "blur->tidal-submission#lookup" },
+            data: { "tidal-submission-target": "url", action: "input->tidal-submission#lookup blur->tidal-submission#lookup" },
             class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500",
             placeholder: "https://tidal.com/browse/track/123456" %>
         <p class="text-sm text-gray-400 mt-1">
