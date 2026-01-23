@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .input {
+    @apply w-full rounded-md bg-gray-800 text-gray-100 placeholder-gray-400 border border-gray-700 px-3 py-2 focus:outline-none focus:ring;
+  }
+}

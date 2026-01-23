@@ -29,10 +29,10 @@ threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 8080.
-port ENV.fetch("PORT", 8080)
+port ENV.fetch("PORT", 3000)
 
 # Bind to all interfaces so the app can be reached when self-hosting.
-bind "tcp://0.0.0.0:#{ENV.fetch("PORT", 8080)}"
+#bind "tcp://0.0.0.0:#{ENV.fetch("PORT", 3000)}"
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
