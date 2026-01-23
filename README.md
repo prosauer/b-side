@@ -101,39 +101,47 @@ Optional (for full functionality):
 
 ## Deployment
 
-### Fly.io Deployment
+### Self-Hosting with Kamal (Recommended)
 
-1. Install Fly CLI:
+1. Install Kamal:
 ```bash
-curl -L https://fly.io/install.sh | sh
+gem install kamal
 ```
 
-2. Login to Fly:
+2. Update `config/deploy.yml` with your server IP(s), registry, and optional SSL proxy settings.
+
+3. Configure secrets:
 ```bash
-fly auth login
+bin/rails secret # use this value for SECRET_KEY_BASE and DEVISE_SECRET_KEY
+```
+Store secrets in `.kamal/secrets` (see Kamal docs) or your registry/host secret store.
+
+4. Provision your PostgreSQL database and set `DATABASE_URL` for production.
+
+5. Build and deploy:
+```bash
+bin/kamal setup
+bin/kamal deploy
 ```
 
-3. Create and configure the app:
-```bash
-fly launch
-```
+### Manual Server Deployment (Without Containers)
 
-4. Set environment secrets:
+1. Set required production environment variables (`DATABASE_URL`, `SECRET_KEY_BASE`, `DEVISE_SECRET_KEY`).
+2. Precompile assets:
 ```bash
-fly secrets set SECRET_KEY_BASE=$(bin/rails secret)
-fly secrets set DEVISE_SECRET_KEY=$(bin/rails secret)
-# Add other secrets as needed
+RAILS_ENV=production bin/rails assets:precompile
 ```
-
-5. Provision PostgreSQL:
+3. Run database migrations:
 ```bash
-fly postgres create
-fly postgres attach <postgres-app-name>
+RAILS_ENV=production bin/rails db:migrate
 ```
-
-6. Deploy:
+4. Start the web server:
 ```bash
-fly deploy
+RAILS_ENV=production bin/rails server -b 0.0.0.0 -p 3000
+```
+5. Start background jobs in a separate process:
+```bash
+RAILS_ENV=production bundle exec solid_queue start
 ```
 
 ### Neon PostgreSQL (Alternative)

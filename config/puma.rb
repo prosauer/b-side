@@ -31,7 +31,7 @@ threads threads_count, threads_count
 # Specifies the `port` that Puma will listen on to receive requests; default is 8080.
 port ENV.fetch("PORT", 8080)
 
-# Bind to all interfaces so Fly can reach the app via its proxy.
+# Bind to all interfaces so the app can be reached when self-hosting.
 bind "tcp://0.0.0.0:#{ENV.fetch("PORT", 8080)}"
 
 # Allow puma to be restarted by `bin/rails restart` command.
