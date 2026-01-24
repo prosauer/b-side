@@ -150,7 +150,7 @@
                 </div>
 
                 <% if can_add_point %>
-                  <%= form_with url: submission_votes_path(submission), method: :post, class: "space-y-3" do |f| %>
+                  <%= form_with url: submission_votes_path(submission), method: :post, scope: :vote, class: "space-y-3" do |f| %>
                     <% if user_vote.nil? %>
                       <div>
                         <%= f.label :comment, "Comment (optional)", class: "block text-sm font-semibold mb-2" %>

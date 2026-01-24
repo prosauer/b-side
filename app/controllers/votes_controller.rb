@@ -34,7 +34,7 @@ class VotesController < ApplicationController
   end
 
   def vote_params
-    params.require(:vote).permit(:comment)
+    params.fetch(:vote, {}).permit(:comment)
   end
 
   def require_group_membership
