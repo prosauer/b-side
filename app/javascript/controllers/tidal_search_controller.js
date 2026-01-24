@@ -17,17 +17,20 @@ export default class extends Controller {
   ]
 
   connect() {
+    console.log("[tidal-search] connected", this.element)
     this.debounceTimer = null
   }
 
   search() {
+    console.log("[tidal-search] search fired", this.inputTarget.value)
     this.clearSelection()
     clearTimeout(this.debounceTimer)
     this.debounceTimer = setTimeout(() => this.fetchSuggestions(), 250)
   }
 
   close(event) {
-    if (!this.suggestionsTarget.contains(event.target) && event.target !== this.inputTarget) {
+    // Use contains() for input too (click may land on input wrapper)
+    if (!this.suggestionsTarget.contains(event.target) && !this.inputTarget.contains(event.target)) {
       this.hideSuggestions()
     }
   }
@@ -55,13 +58,24 @@ export default class extends Controller {
       return
     }
 
+    const url = this.element.dataset.tidalSearchUrl
+    console.log("[tidal-search] fetching", url, query)
+
+    if (!url) {
+      console.warn("[tidal-search] missing data-tidal-search-url on the controller element")
+      return
+    }
+
     try {
-      const response = await fetch(`${this.urlValue}?query=${encodeURIComponent(query)}`, {
+      const response = await fetch(`${url}?query=${encodeURIComponent(query)}`, {
         headers: { Accept: "application/json" }
       })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
       const data = await response.json()
       this.renderSuggestions(data.tracks || [])
     } catch (error) {
+      console.warn("[tidal-search] fetch error", error)
       this.hideSuggestions()
     }
   }
@@ -126,9 +140,5 @@ export default class extends Controller {
 
   hideSuggestions() {
     this.suggestionsTarget.classList.add("hidden")
-  }
-
-  get urlValue() {
-    return this.data.get("url")
   }
 }
