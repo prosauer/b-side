@@ -1,5 +1,5 @@
 class SubmissionsController < ApplicationController
-  before_action :set_week, only: [ :new, :create ]
+  before_action :set_week, only: [ :new, :create, :search ]
   before_action :set_submission, only: [ :show ]
   before_action :require_group_membership
   before_action :check_submission_phase, only: [ :new, :create ]
@@ -36,6 +36,13 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  def search
+    query = params[:query].to_s
+    results = TidalService.new.search_tracks(query: query)
+
+    render json: { tracks: results }
+  end
+
   private
 
   def set_week
@@ -47,7 +54,7 @@ class SubmissionsController < ApplicationController
   end
 
   def submission_params
-    params.require(:submission).permit(:song_title, :artist, :song_url, :comment)
+    params.require(:submission).permit(:song_title, :artist, :song_url, :comment, :tidal_id)
   end
 
   def require_group_membership

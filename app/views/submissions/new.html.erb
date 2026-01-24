@@ -20,7 +20,14 @@
       </p>
     </div>
 
-    <%= form_with model: @submission, url: group_season_week_submissions_path(@group, @season, @week), class: "space-y-6" do |f| %>
+    <%= form_with model: @submission,
+                  url: group_season_week_submissions_path(@group, @season, @week),
+                  class: "space-y-6",
+                  data: {
+                    controller: "tidal-search",
+                    action: "submit->tidal-search#validate click->tidal-search#close",
+                    "tidal-search-url": search_group_season_week_submissions_path(@group, @season, @week)
+                  } do |f| %>
       <% if @submission.errors.any? %>
         <div class="bg-red-500/10 border border-red-500 rounded-lg p-4">
           <h3 class="font-semibold text-red-400 mb-2">
@@ -34,36 +41,48 @@
         </div>
       <% end %>
 
-      <div>
-        <%= f.label :song_title, "Song Title", class: "block text-sm font-semibold mb-2" %>
-        <%= f.text_field :song_title, required: true,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Enter the song title" %>
-      </div>
-
-      <div>
-        <%= f.label :artist, "Artist", class: "block text-sm font-semibold mb-2" %>
-        <%= f.text_field :artist, required: true,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Enter the artist name" %>
-      </div>
-
-      <div>
-        <%= f.label :song_url, "Streaming Link (optional)", class: "block text-sm font-semibold mb-2" %>
-        <%= f.url_field :song_url,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Spotify, Apple Music, YouTube, etc." %>
-        <p class="text-sm text-gray-400 mt-1">
-          Share a link so others can easily listen to your submission
+      <div class="space-y-3">
+        <label for="tidal-query" class="block text-sm font-semibold">Search Tidal</label>
+        <div class="relative">
+          <input
+            id="tidal-query"
+            name="tidal_query"
+            type="text"
+            autocomplete="off"
+            class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+            placeholder="Start typing a song or artist name"
+            data-tidal-search-target="input"
+            data-action="input->tidal-search#search"
+          />
+          <div
+            id="tidal-suggestions"
+            class="absolute z-10 mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg hidden"
+            data-tidal-search-target="suggestions"
+          ></div>
+        </div>
+        <p class="text-sm text-gray-400">
+          Tidal-only submissions. Choose a track from the suggestions to fill in your submission.
+        </p>
+        <p id="tidal-error" class="text-sm text-red-400 hidden" data-tidal-search-target="error">
+          Select a track from the list before submitting.
         </p>
       </div>
 
-      <div>
-        <%= f.label :comment, "Your Comment (optional)", class: "block text-sm font-semibold mb-2" %>
-        <%= f.text_area :comment, rows: 4,
-            class: "w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500", 
-            placeholder: "Why did you choose this song? Any interesting story behind it?" %>
+      <div id="tidal-selected" class="hidden border border-gray-700 rounded-lg p-4 bg-gray-900/60" data-tidal-search-target="selected">
+        <div class="flex items-center gap-4">
+          <img id="tidal-cover" alt="" class="w-16 h-16 rounded-md object-cover bg-gray-800" data-tidal-search-target="cover" />
+          <div>
+            <p id="tidal-title" class="text-lg font-semibold" data-tidal-search-target="title"></p>
+            <p id="tidal-artist" class="text-purple-400" data-tidal-search-target="artist"></p>
+            <p id="tidal-album" class="text-sm text-gray-400" data-tidal-search-target="album"></p>
+          </div>
+        </div>
       </div>
+
+      <%= f.hidden_field :song_title, id: "submission-song-title", data: { "tidal-search-target": "songTitleField" } %>
+      <%= f.hidden_field :artist, id: "submission-artist", data: { "tidal-search-target": "artistField" } %>
+      <%= f.hidden_field :song_url, id: "submission-song-url", data: { "tidal-search-target": "urlField" } %>
+      <%= f.hidden_field :tidal_id, id: "submission-tidal-id", data: { "tidal-search-target": "tidalIdField" } %>
 
       <div class="flex items-center justify-between pt-4">
         <%= f.submit "Submit Song", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>

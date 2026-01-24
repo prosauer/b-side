@@ -27,3 +27,8 @@
 #   # Report violations without enforcing the policy.
 #   # config.content_security_policy_report_only = true
 # end
+Rails.application.config.content_security_policy do |policy|
+  # ...
+  policy.img_src :self, :data, "https://resources.tidal.com"
+  
+end
