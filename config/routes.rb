@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   resources :submissions, only: [] do
     resources :votes, only: [ :create ]
   end
+  post "weeks/:week_id/votes", to: "votes#bulk_update", as: :week_votes
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
