@@ -147,7 +147,7 @@
                     <span class="font-semibold">Points</span>
                     <button type="button"
                             class="h-8 w-8 rounded-full bg-gray-800 border border-gray-600 text-white hover:bg-gray-700"
-                            data-action="vote-points#decrement"
+                            data-action="click->vote-points#decrement"
                             data-submission-id="<%= submission.id %>">
                       -
                     </button>
@@ -160,7 +160,7 @@
                                          data: { vote_points_target: "score", submission_id: submission.id } %>
                     <button type="button"
                             class="h-8 w-8 rounded-full bg-gray-800 border border-gray-600 text-white hover:bg-gray-700"
-                            data-action="vote-points#increment"
+                            data-action="click->vote-points#increment"
                             data-submission-id="<%= submission.id %>">
                       +
                     </button>
