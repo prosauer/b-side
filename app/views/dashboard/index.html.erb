@@ -13,8 +13,10 @@
           <% end %>
         </div>
         <% unless current_user.tidal_account.present? %>
-          <%= link_to "Connect to TIDAL", tidal_connect_path,
-                      class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" %>
+          <%= link_to "Connect TIDAL",
+            tidal_connect_path,
+            data: { turbo: false, turbo_frame: "_top" },
+            class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" %>
         <% end %>
       </div>
     </div>

@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   get "tidal/connect", to: "tidal_connections#connect", as: :tidal_connect
   get "tidal/callback", to: "tidal_connections#callback", as: :tidal_callback
 
+  # Tidal OAuth
+  get  "/auth/tidal",          to: "tidal_connections#connect",    as: :tidal_connections_connect
+  get  "/auth/tidal/callback", to: "tidal_connections#callback", as: :tidal_connections_callback
+
+
   # Groups
   resources :groups do
     resources :seasons, only: [ :index, :new, :create, :show ] do

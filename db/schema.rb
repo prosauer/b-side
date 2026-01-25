@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_20_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_25_154403) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_20_000000) do
     t.index ["week_id"], name: "index_submissions_on_week_id"
   end
 
+  create_table "tidal_accounts", force: :cascade do |t|
+    t.string "access_token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "refresh_token"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_tidal_accounts_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "avatar_url"
     t.datetime "created_at", null: false
@@ -73,6 +83,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_20_000000) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.text "tidal_access_token"
+    t.datetime "tidal_expires_at"
+    t.text "tidal_refresh_token"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -110,6 +123,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_20_000000) do
   add_foreign_key "seasons", "groups"
   add_foreign_key "submissions", "users"
   add_foreign_key "submissions", "weeks"
+  add_foreign_key "tidal_accounts", "users"
   add_foreign_key "votes", "submissions"
   add_foreign_key "votes", "users", column: "voter_id"
   add_foreign_key "weeks", "seasons"

@@ -3,7 +3,11 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-
+  
+  #encrypts :tidal_access_token
+  #encrypts :tidal_refresh_token
+  #encrypts :tidal_expires_at
+  
   # Associations
   has_many :memberships, dependent: :destroy
   has_many :groups, through: :memberships
