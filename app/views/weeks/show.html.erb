@@ -95,9 +95,14 @@
           <div class="bg-gray-900 rounded-lg p-4">
             <p class="text-lg font-semibold mb-1"><%= @user_submission.song_title %></p>
             <p class="text-purple-400 mb-2"><%= @user_submission.artist %></p>
-            <% if @user_submission.song_url.present? %>
-              <%= link_to "🔗 Listen", @user_submission.song_url, target: "_blank", 
-                  class: "text-blue-400 hover:text-blue-300 text-sm" %>
+            <% if @user_submission.tidal_id.present? %>
+              <iframe src="https://embed.tidal.com/tracks/<%= @user_submission.tidal_id %>"
+                      width="500"
+                      height="120"
+                      allow="encrypted-media; fullscreen; clipboard-write https://embed.tidal.com; web-share"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                      style="color-scheme: light dark"
+                      title="TIDAL Embed Player"></iframe>
             <% end %>
           </div>
         </div>
@@ -138,14 +143,15 @@
                         "<%= submission.comment %>"
                       </p>
                     <% end %>
-                    <% if (url = safe_external_url(submission.song_url)) %>
-                        <%= link_to url,
-                                    target: "_blank",
-                                    rel: "noopener noreferrer",
-                                    class: "inline-block text-blue-400 hover:text-blue-300 text-sm" do %>
-                          🔗 Listen
-                        <% end %>
-                      <% end %>
+                    <% if submission.tidal_id.present? %>
+                      <iframe src="https://embed.tidal.com/tracks/<%= submission.tidal_id %>"
+                              width="500"
+                              height="120"
+                              allow="encrypted-media; fullscreen; clipboard-write https://embed.tidal.com; web-share"
+                              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                              style="color-scheme: light dark"
+                              title="TIDAL Embed Player"></iframe>
+                    <% end %>
                   </div>
 
                   <div class="flex flex-wrap items-center gap-3 text-sm text-gray-300">
@@ -245,13 +251,14 @@
                         "<%= submission.comment %>"
                       </p>
                     <% end %>
-                    <% if (url = safe_external_url(submission.song_url)) %>
-                      <%= link_to url,
-                                  target: "_blank",
-                                  rel: "noopener noreferrer",
-                                  class: "inline-block text-blue-400 hover:text-blue-300 text-sm" do %>
-                        🔗 Listen
-                      <% end %>
+                    <% if submission.tidal_id.present? %>
+                      <iframe src="https://embed.tidal.com/tracks/<%= submission.tidal_id %>"
+                              width="500"
+                              height="120"
+                              allow="encrypted-media; fullscreen; clipboard-write https://embed.tidal.com; web-share"
+                              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                              style="color-scheme: light dark"
+                              title="TIDAL Embed Player"></iframe>
                     <% end %>
                   </div>
                   <div class="text-right ml-4">
