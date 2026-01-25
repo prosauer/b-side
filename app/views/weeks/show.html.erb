@@ -151,13 +151,13 @@
                             data-submission-id="<%= submission.id %>">
                       -
                     </button>
-                    <%= number_field_tag "votes[#{submission.id}][score]",
-                                         points_for_song,
-                                         min: 0,
-                                         max: @group.max_points_per_song,
-                                         readonly: true,
-                                         class: "w-16 text-center bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white",
-                                         data: { vote_points_target: "score", submission_id: submission.id } %>
+                    <%= text_field_tag "votes[#{submission.id}][score]",
+                                       points_for_song,
+                                       readonly: true,
+                                       inputmode: "numeric",
+                                       pattern: "\\d*",
+                                       class: "w-16 text-center bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white",
+                                       data: { vote_points_target: "score", submission_id: submission.id } %>
                     <button type="button"
                             class="h-8 w-8 rounded-full bg-gray-800 border border-gray-600 text-white hover:bg-gray-700"
                             data-action="click->vote-points#increment"
@@ -182,7 +182,8 @@
             </div>
 
             <div class="mt-6 space-y-2">
-              <%= submit_tag "Submit votes",
+              <%= button_tag "Submit votes",
+                             type: "submit",
                              class: "w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-semibold disabled:opacity-60 disabled:cursor-not-allowed",
                              data: { vote_points_target: "submit" },
                              disabled: @remaining_points != 0 %>
