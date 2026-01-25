@@ -1,7 +1,7 @@
 class WeeksController < ApplicationController
   before_action :set_week
   before_action :require_group_membership
-  before_action :require_group_admin, only: [ :edit, :update ]
+  before_action :require_group_admin, only: [ :edit, :update, :generate_playlist ]
 
   def index
     @season = Season.find(params[:season_id])
@@ -38,6 +38,12 @@ class WeeksController < ApplicationController
       @group = @season.group
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def generate_playlist
+    GeneratePlaylistsJob.perform_later(@week.id)
+    redirect_to group_season_week_path(@week.season.group, @week.season, @week),
+                notice: "Playlist generation requested."
   end
 
   private
