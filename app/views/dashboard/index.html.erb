@@ -2,25 +2,6 @@
   <h1 class="text-3xl font-bold mb-8">B-Side Music Challenge</h1>
 
   <% if user_signed_in? %>
-    <div class="mb-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-semibold mb-1">TIDAL Connection</h2>
-          <% if current_user.tidal_account.present? %>
-            <p class="text-green-400 text-sm">Connected to TIDAL</p>
-          <% else %>
-            <p class="text-gray-400 text-sm">Connect your TIDAL account to create playlists.</p>
-          <% end %>
-        </div>
-        <% unless current_user.tidal_account.present? %>
-          <%= link_to "Connect TIDAL",
-            tidal_connect_path,
-            data: { turbo: false, turbo_frame: "_top" },
-            class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" %>
-        <% end %>
-      </div>
-    </div>
-
     <div class="mb-8">
       <h2 class="text-2xl font-semibold mb-4">Your Groups</h2>
       

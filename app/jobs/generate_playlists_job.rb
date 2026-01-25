@@ -1,8 +1,9 @@
 class GeneratePlaylistsJob < ApplicationJob
   queue_as :default
 
-  def perform(week_id)
+  def perform(week_id, user_id)
     week = Week.find(week_id)
+    user = User.find(user_id)
     submissions = week.submissions.includes(:user)
 
     return if submissions.empty?
@@ -16,28 +17,22 @@ class GeneratePlaylistsJob < ApplicationJob
     week.update(spotify_playlist_url: spotify_url) if spotify_url
 
     # Generate Tidal playlist
-    tidal_account = playlist_owner_account(week)
-    if tidal_account
-      tidal_service = TidalService.new
-      access_token = ensure_tidal_access_token(tidal_service, tidal_account)
-      if access_token
-        tidal_url = tidal_service.create_playlist(
-          name: week.category,
-          tracks: submissions.map(&:tidal_id).compact,
-          access_token: access_token
-        )
-        week.update(tidal_playlist_url: tidal_url) if tidal_url
-      end
-    end
+    tidal_account = user.tidal_account
+    return unless tidal_account
+
+    tidal_service = TidalService.new
+    access_token = ensure_tidal_access_token(tidal_service, tidal_account)
+    return unless access_token
+
+    tidal_url = tidal_service.create_playlist(
+      name: week.category,
+      tracks: submissions.map(&:tidal_id).compact,
+      access_token: access_token
+    )
+    week.update(tidal_playlist_url: tidal_url) if tidal_url
   end
 
   private
-
-  def playlist_owner_account(week)
-    week.season.group.memberships.includes(:user).find do |membership|
-      membership.admin? && membership.user.tidal_account.present?
-    end&.user&.tidal_account
-  end
 
   def ensure_tidal_access_token(service, tidal_account)
     return tidal_account.access_token unless tidal_account.expired? && tidal_account.refresh_token.present?

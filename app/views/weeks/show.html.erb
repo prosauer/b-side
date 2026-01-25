@@ -51,12 +51,8 @@
 
     <% if @group.memberships.find_by(user: current_user).admin? %>
       <div class="mt-4 pt-4 border-t border-gray-700 flex flex-wrap items-center gap-4">
-        <%= link_to "Edit Week", edit_group_season_week_path(@group, @season, @week), 
+        <%= link_to "Edit Week", edit_group_season_week_path(@group, @season, @week),
             class: "text-purple-400 hover:text-purple-300 text-sm underline" %>
-        <%= button_to "Generate Playlist",
-                      generate_playlist_group_season_week_path(@group, @season, @week),
-                      method: :post,
-                      class: "text-sm text-purple-300 hover:text-purple-200 underline" %>
       </div>
     <% end %>
   </div>
@@ -116,7 +112,13 @@
            data-controller="vote-points"
            data-vote-points-total-points-value="<%= Week::TOTAL_POINTS_PER_USER %>"
            data-vote-points-max-per-song-value="<%= @group.max_points_per_song %>">
-        <h2 class="text-xl font-semibold mb-4">Vote on Submissions</h2>
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <h2 class="text-xl font-semibold">Vote on Submissions</h2>
+          <%= button_to "Create Playlist",
+                        generate_playlist_group_season_week_path(@group, @season, @week),
+                        method: :post,
+                        class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold" %>
+        </div>
         <p class="text-gray-400 mb-4">
           Time remaining: <%= distance_of_time_in_words(Time.current, @week.voting_deadline) %>
         </p>
