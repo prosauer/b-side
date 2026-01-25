@@ -10,6 +10,7 @@ class TidalService
 
   TIDAL_SEARCH_RESULTS_URL = "https://openapi.tidal.com/v2/searchResults"
   TIDAL_TRACKS_URL         = "https://openapi.tidal.com/v2/tracks"
+  TIDAL_PLAYLISTS_URL      = "https://openapi.tidal.com/v2/playlists"
 
   DEFAULT_COUNTRY_CODE = ENV.fetch("TIDAL_COUNTRY_CODE", "DE")
   MAX_TRACK_IDS_PER_BATCH = 20
@@ -20,8 +21,17 @@ class TidalService
   end
 
   def create_playlist(name:, tracks:)
-    # TODO: Implement Tidal playlist creation
-    nil
+    return if tracks.blank?
+
+    token = access_token
+    return if token.blank?
+
+    playlist_id = create_playlist_record(token, name)
+    return if playlist_id.blank?
+
+    add_tracks_to_playlist(token, playlist_id, tracks)
+
+    "https://tidal.com/browse/playlist/#{playlist_id}"
   end
 
   # Search for tracks via v2:
@@ -82,6 +92,14 @@ class TidalService
     Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(request) }
   end
 
+  def http_post(uri, token, payload)
+    request = Net::HTTP::Post.new(uri)
+    request["Authorization"] = "Bearer #{token}"
+    request["Content-Type"] = "application/vnd.api+json"
+    request.body = JSON.generate(payload)
+    Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(request) }
+  end
+
   # ---------------------------
   # Logging helpers (prevents ASCII-8BIT -> UTF-8 explosions)
   # ---------------------------
@@ -122,6 +140,43 @@ class TidalService
     return [] unless data.is_a?(Array)
 
     data.filter_map { |ri| ri.is_a?(Hash) ? ri["id"]&.to_s : nil }
+  end
+
+  def create_playlist_record(token, name)
+    payload = {
+      data: {
+        type: "playlists",
+        attributes: {
+          name: name,
+          public: false
+        }
+      }
+    }
+
+    uri = URI(TIDAL_PLAYLISTS_URL)
+    response = http_post(uri, token, payload)
+    safe_logger_info("Tidal create playlist status=#{response.code} body=#{safe_log(response.body)}")
+    return unless response.is_a?(Net::HTTPSuccess) || response.is_a?(Net::HTTPCreated)
+
+    body = JSON.parse(response.body) rescue {}
+    body.dig("data", "id")
+  rescue StandardError => e
+    Rails.logger.warn("Tidal create playlist failed: #{e.class}: #{e.message}")
+    nil
+  end
+
+  def add_tracks_to_playlist(token, playlist_id, tracks)
+    track_payload = {
+      data: tracks.map { |track_id| { type: "tracks", id: track_id.to_s } }
+    }
+
+    uri = URI("#{TIDAL_PLAYLISTS_URL}/#{playlist_id}/relationships/items")
+    response = http_post(uri, token, track_payload)
+    safe_logger_info("Tidal add tracks status=#{response.code} body=#{safe_log(response.body)}")
+    response.is_a?(Net::HTTPSuccess) || response.is_a?(Net::HTTPNoContent)
+  rescue StandardError => e
+    Rails.logger.warn("Tidal add tracks failed: #{e.class}: #{e.message}")
+    nil
   end
 
   def fetch_tracks_by_ids(token, ids, country_code:)
