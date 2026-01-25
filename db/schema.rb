@@ -74,6 +74,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_25_154403) do
     t.index ["user_id"], name: "index_tidal_accounts_on_user_id"
   end
 
+  create_table "user_playlists", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "tidal_url", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.bigint "week_id"
+    t.index ["user_id", "name"], name: "index_user_playlists_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_user_playlists_on_user_id"
+    t.index ["week_id"], name: "index_user_playlists_on_week_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "avatar_url"
     t.datetime "created_at", null: false
@@ -124,6 +136,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_25_154403) do
   add_foreign_key "submissions", "users"
   add_foreign_key "submissions", "weeks"
   add_foreign_key "tidal_accounts", "users"
+  add_foreign_key "user_playlists", "users"
+  add_foreign_key "user_playlists", "weeks"
   add_foreign_key "votes", "submissions"
   add_foreign_key "votes", "users", column: "voter_id"
   add_foreign_key "weeks", "seasons"
