@@ -17,9 +17,15 @@
           📝 Submissions Open
         </span>
       <% elsif @week.voting_phase? %>
-        <span class="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-full text-sm font-semibold">
-          🗳️ Voting Open
-        </span>
+        <% if @remaining_points&.zero? %>
+          <span class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold">
+            ✅ Voting Submitted
+          </span>
+        <% else %>
+          <span class="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-full text-sm font-semibold">
+            🗳️ Voting Open
+          </span>
+        <% end %>
       <% else %>
         <span class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold">
           🏆 Results
