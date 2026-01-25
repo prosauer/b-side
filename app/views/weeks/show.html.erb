@@ -133,7 +133,6 @@
                   <div class="mb-4">
                     <p class="text-lg font-semibold mb-1"><%= submission.song_title %></p>
                     <p class="text-purple-400 mb-1"><%= submission.artist %></p>
-                    <p class="text-sm text-gray-400 mb-2">by <%= submission.user.display_name %></p>
                     <% if submission.comment.present? %>
                       <p class="text-sm text-gray-300 italic bg-gray-800 p-3 rounded">
                         "<%= submission.comment %>"

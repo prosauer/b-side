@@ -5,6 +5,11 @@ class LeaderboardsController < ApplicationController
   def weekly
     @week = Week.find(params[:week_id])
     @season = @week.season
+    unless @week.results_phase?
+      redirect_to group_season_week_path(@group, @season, @week),
+                  alert: "Leaderboard updates after voting ends."
+      return
+    end
 
     # Calculate rankings for the week
     @rankings = @week.submissions.includes(:user, :votes).map do |submission|
@@ -20,7 +25,10 @@ class LeaderboardsController < ApplicationController
     @season = Season.find(params[:season_id])
 
     # Calculate cumulative standings for the season
-    submissions = Submission.joins(:week).where(weeks: { season_id: @season.id }).includes(:user, :votes)
+    submissions = Submission.joins(:week)
+                            .where(weeks: { season_id: @season.id })
+                            .where("weeks.voting_deadline <= ?", Time.current)
+                            .includes(:user, :votes)
 
     user_stats = {}
     submissions.each do |submission|
@@ -47,7 +55,10 @@ class LeaderboardsController < ApplicationController
 
   def all_time
     # Calculate all-time standings across all seasons in the group
-    submissions = Submission.joins(week: :season).where(seasons: { group_id: @group.id }).includes(:user, :votes)
+    submissions = Submission.joins(week: :season)
+                            .where(seasons: { group_id: @group.id })
+                            .where("weeks.voting_deadline <= ?", Time.current)
+                            .includes(:user, :votes)
 
     user_stats = {}
     submissions.each do |submission|
