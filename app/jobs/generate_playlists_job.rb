@@ -30,6 +30,7 @@ class GeneratePlaylistsJob < ApplicationJob
       access_token: access_token
     )
     week.update(tidal_playlist_url: tidal_url) if tidal_url
+    tidal_url
   end
 
   private

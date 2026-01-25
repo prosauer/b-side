@@ -47,9 +47,13 @@ class WeeksController < ApplicationController
       return
     end
 
-    GeneratePlaylistsJob.perform_later(@week.id, current_user.id)
-    redirect_to group_season_week_path(@week.season.group, @week.season, @week),
-                notice: "Playlist generation requested."
+    tidal_url = GeneratePlaylistsJob.perform_now(@week.id, current_user.id)
+    if tidal_url.present?
+      redirect_to tidal_url, allow_other_host: true
+    else
+      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
+                  alert: "Unable to create a playlist right now."
+    end
   end
 
   private
