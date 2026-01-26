@@ -20,8 +20,11 @@
       </p>
     </div>
 
+    <% submission_url = @submission.persisted? ? group_season_week_submission_path(@group, @season, @week, @submission) : group_season_week_submissions_path(@group, @season, @week) %>
+    <% submission_method = @submission.persisted? ? :patch : :post %>
     <%= form_with model: @submission,
-                  url: group_season_week_submissions_path(@group, @season, @week),
+                  url: submission_url,
+                  method: submission_method,
                   class: "space-y-6",
                   data: {
                     controller: "tidal-search",
@@ -51,6 +54,7 @@
             autocomplete="off"
             class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
             placeholder="Start typing a song or artist name"
+            value="<%= @submission.song_title.present? ? "#{@submission.song_title} - #{@submission.artist}" : "" %>"
             data-tidal-search-target="input"
             data-action="input->tidal-search#search"
           />
@@ -68,15 +72,20 @@
         </p>
       </div>
 
-      <div id="tidal-selected" class="hidden border border-gray-700 rounded-lg p-4 bg-gray-900/60" data-tidal-search-target="selected">
-        <div class="flex items-center gap-4">
-          <img id="tidal-cover" alt="" class="w-16 h-16 rounded-md object-cover bg-gray-800" data-tidal-search-target="cover" />
-          <div>
-            <p id="tidal-title" class="text-lg font-semibold" data-tidal-search-target="title"></p>
-            <p id="tidal-artist" class="text-purple-400" data-tidal-search-target="artist"></p>
-            <p id="tidal-album" class="text-sm text-gray-400" data-tidal-search-target="album"></p>
-          </div>
+      <% selected_classes = @submission.tidal_id.present? ? "border border-gray-700 rounded-lg p-4 bg-gray-900/60" : "hidden border border-gray-700 rounded-lg p-4 bg-gray-900/60" %>
+      <div id="tidal-selected" class="<%= selected_classes %>" data-tidal-search-target="selected">
+        <div class="hidden">
+          <img alt="" data-tidal-search-target="cover" />
         </div>
+        <p id="tidal-title" class="text-lg font-semibold" data-tidal-search-target="title">
+          <%= @submission.song_title %>
+        </p>
+        <p id="tidal-artist" class="text-purple-400" data-tidal-search-target="artist">
+          <%= @submission.artist %>
+        </p>
+        <p id="tidal-album" class="text-sm text-gray-400" data-tidal-search-target="album">
+          <%= @submission.song_title.present? ? "Unknown album" : "" %>
+        </p>
       </div>
 
       <%= f.hidden_field :song_title, id: "submission-song-title", data: { "tidal-search-target": "songTitleField" } %>
@@ -85,7 +94,8 @@
       <%= f.hidden_field :tidal_id, id: "submission-tidal-id", data: { "tidal-search-target": "tidalIdField" } %>
 
       <div class="flex items-center justify-between pt-4">
-        <%= f.submit "Submit Song", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
+        <%= f.submit @submission.persisted? ? "Update Song" : "Submit Song",
+                     class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
         <%= link_to "Cancel", group_season_week_path(@group, @season, @week), class: "text-gray-400 hover:text-white" %>
       </div>
     <% end %>

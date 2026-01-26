@@ -6,10 +6,10 @@ export default class extends Controller {
     "suggestions",
     "selected",
     "error",
+    "cover",
     "title",
     "artist",
     "album",
-    "cover",
     "songTitleField",
     "artistField",
     "urlField",
@@ -135,6 +135,11 @@ export default class extends Controller {
     this.artistFieldTarget.value = ""
     this.urlFieldTarget.value = ""
     this.tidalIdFieldTarget.value = ""
+    this.coverTarget.src = ""
+    this.coverTarget.alt = ""
+    this.titleTarget.textContent = ""
+    this.artistTarget.textContent = ""
+    this.albumTarget.textContent = ""
     this.selectedTarget.classList.add("hidden")
   }
 

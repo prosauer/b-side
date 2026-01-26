@@ -21,7 +21,7 @@ Rails.application.routes.draw do
         member do
           post :generate_playlist
         end
-        resources :submissions, only: [ :index, :new, :create, :show ] do
+        resources :submissions, only: [ :index, :new, :create, :show, :update ] do
           collection do
             get :search
           end

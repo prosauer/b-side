@@ -1,8 +1,8 @@
 class SubmissionsController < ApplicationController
-  before_action :set_week, only: [ :new, :create, :search ]
-  before_action :set_submission, only: [ :show ]
+  before_action :set_week, only: [ :new, :create, :search, :update ]
+  before_action :set_submission, only: [ :show, :update ]
   before_action :require_group_membership
-  before_action :check_submission_phase, only: [ :new, :create ]
+  before_action :check_submission_phase, only: [ :new, :create, :update ]
 
   def index
     @week = Week.find(params[:week_id])
@@ -18,19 +18,37 @@ class SubmissionsController < ApplicationController
   end
 
   def new
-    @submission = @week.submissions.build
+    @submission = @week.submissions.find_or_initialize_by(user: current_user)
     @season = @week.season
     @group = @season.group
   end
 
   def create
-    @submission = @week.submissions.build(submission_params)
-    @submission.user = current_user
+    existing_submission = @week.submissions.find_by(user: current_user)
+    @submission = existing_submission || @week.submissions.build(user: current_user)
+    @submission.assign_attributes(submission_params)
     @season = @week.season
     @group = @season.group
 
     if @submission.save
       redirect_to group_season_week_path(@group, @season, @week), notice: "Your submission has been saved!"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    @season = @week.season
+    @group = @season.group
+
+    unless @submission.user == current_user
+      redirect_to group_season_week_path(@group, @season, @week),
+                  alert: "You can only update your own submission."
+      return
+    end
+
+    if @submission.update(submission_params)
+      redirect_to group_season_week_path(@group, @season, @week), notice: "Your submission has been updated!"
     else
       render :new, status: :unprocessable_entity
     end
@@ -75,11 +93,6 @@ class SubmissionsController < ApplicationController
     unless @week.submission_phase?
       redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "Submissions are closed for this week."
-    end
-
-    if @week.submissions.exists?(user: current_user)
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
-                  alert: "You have already submitted for this week."
     end
   end
 end
