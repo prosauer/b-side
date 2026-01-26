@@ -161,11 +161,7 @@
                         <p class="text-lg font-semibold mb-1"><%= submission.song_title %></p>
                         <p class="text-purple-400 mb-1"><%= submission.artist %></p>
                       </div>
-                      <%= button_to(user_like ? "♥" : "♡",
-                                    user_like ? submission_like_path(submission, user_like) : submission_likes_path(submission),
-                                    method: user_like ? :delete : :post,
-                                    class: "text-2xl text-pink-400 hover:text-pink-300",
-                                    aria: { label: user_like ? "Unlike this song" : "Like this song" }) %>
+                      <%= render "likes/button", submission: submission, user_like: user_like %>
                     </div>
                     <% if submission.comment.present? %>
                       <p class="text-sm text-gray-300 italic bg-gray-800 p-3 rounded">

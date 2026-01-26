@@ -1,19 +1,31 @@
 class LikesController < ApplicationController
+  include ActionView::RecordIdentifier
   before_action :set_submission
   before_action :require_group_membership
   before_action :check_voting_phase
 
   def create
-    Like.find_or_create_by!(submission: @submission, user: current_user)
-    redirect_to group_season_week_path(@group, @season, @week)
+    @user_like = Like.find_or_create_by!(submission: @submission, user: current_user)
+    respond_to do |format|
+      format.turbo_stream { render_like_button }
+      format.html { redirect_to group_season_week_path(@group, @season, @week) }
+    end
   rescue ActiveRecord::RecordInvalid => e
-    redirect_to group_season_week_path(@group, @season, @week), alert: e.record.errors.full_messages.join(", ")
+    respond_to do |format|
+      format.turbo_stream do
+        redirect_to group_season_week_path(@group, @season, @week), alert: e.record.errors.full_messages.join(", ")
+      end
+      format.html { redirect_to group_season_week_path(@group, @season, @week), alert: e.record.errors.full_messages.join(", ") }
+    end
   end
 
   def destroy
-    like = Like.find_by(submission: @submission, user: current_user)
-    like&.destroy
-    redirect_to group_season_week_path(@group, @season, @week)
+    @user_like = Like.find_by(submission: @submission, user: current_user)
+    @user_like&.destroy
+    respond_to do |format|
+      format.turbo_stream { render_like_button }
+      format.html { redirect_to group_season_week_path(@group, @season, @week) }
+    end
   end
 
   private
@@ -35,5 +47,13 @@ class LikesController < ApplicationController
     return if @week.voting_phase?
 
     redirect_to group_season_week_path(@group, @season, @week), alert: "Likes are only available during voting."
+  end
+
+  def render_like_button
+    render turbo_stream: turbo_stream.replace(
+      dom_id(@submission, :like),
+      partial: "likes/button",
+      locals: { submission: @submission, user_like: current_user.likes.find_by(submission: @submission) }
+    )
   end
 end
