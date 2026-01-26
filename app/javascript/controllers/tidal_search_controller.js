@@ -6,10 +6,7 @@ export default class extends Controller {
     "suggestions",
     "selected",
     "error",
-    "title",
-    "artist",
-    "album",
-    "cover",
+    "embed",
     "songTitleField",
     "artistField",
     "urlField",
@@ -121,11 +118,7 @@ export default class extends Controller {
     this.artistFieldTarget.value = track.artist
     this.urlFieldTarget.value = track.url
     this.tidalIdFieldTarget.value = track.id
-    this.coverTarget.src = track.imageUrl || ""
-    this.coverTarget.alt = track.album ? `Album cover for ${track.album}` : "Album cover"
-    this.titleTarget.textContent = track.title
-    this.artistTarget.textContent = track.artist
-    this.albumTarget.textContent = track.album || "Unknown album"
+    this.embedTarget.src = `https://embed.tidal.com/tracks/${track.id}`
     this.selectedTarget.classList.remove("hidden")
     this.errorTarget.classList.add("hidden")
   }
@@ -135,6 +128,7 @@ export default class extends Controller {
     this.artistFieldTarget.value = ""
     this.urlFieldTarget.value = ""
     this.tidalIdFieldTarget.value = ""
+    this.embedTarget.src = ""
     this.selectedTarget.classList.add("hidden")
   }
 

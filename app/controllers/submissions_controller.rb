@@ -18,14 +18,15 @@ class SubmissionsController < ApplicationController
   end
 
   def new
-    @submission = @week.submissions.build
+    @submission = @week.submissions.find_or_initialize_by(user: current_user)
     @season = @week.season
     @group = @season.group
   end
 
   def create
-    @submission = @week.submissions.build(submission_params)
-    @submission.user = current_user
+    existing_submission = @week.submissions.find_by(user: current_user)
+    @submission = existing_submission || @week.submissions.build(user: current_user)
+    @submission.assign_attributes(submission_params)
     @season = @week.season
     @group = @season.group
 
@@ -75,11 +76,6 @@ class SubmissionsController < ApplicationController
     unless @week.submission_phase?
       redirect_to group_season_week_path(@week.season.group, @week.season, @week),
                   alert: "Submissions are closed for this week."
-    end
-
-    if @week.submissions.exists?(user: current_user)
-      redirect_to group_season_week_path(@week.season.group, @week.season, @week),
-                  alert: "You have already submitted for this week."
     end
   end
 end
