@@ -115,11 +115,6 @@
            data-vote-points-max-per-song-value="<%= @group.max_points_per_song %>">
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
           <h2 class="text-xl font-semibold">Vote on Submissions</h2>
-          <%= button_to "Create Playlist",
-                        generate_playlist_group_season_week_path(@group, @season, @week),
-                        method: :post,
-                        form: { data: { turbo: false } },
-                        class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold" %>
         </div>
         <p class="text-gray-400 mb-4">
           Time remaining: <%= distance_of_time_in_words(Time.current, @week.voting_deadline) %>
@@ -136,8 +131,8 @@
           </p>
         </div>
 
-        <% if @week.tidal_playlist_url.present? %>
-          <% if (playlist_src = tidal_playlist_embed_src(@week.tidal_playlist_url)) %>
+        <% if @user_tidal_playlist_url.present? %>
+          <% if (playlist_src = tidal_playlist_embed_src(@user_tidal_playlist_url)) %>
             <div class="mb-4" data-controller="toggle">
               <button type="button"
                       class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm font-semibold text-purple-300 hover:text-purple-200 hover:border-purple-400"
@@ -257,8 +252,8 @@
               class: "text-purple-400 hover:text-purple-300 text-sm" %>
         </div>
 
-        <% if @week.tidal_playlist_url.present? %>
-          <% if (playlist_src = tidal_playlist_embed_src(@week.tidal_playlist_url)) %>
+        <% if @user_tidal_playlist_url.present? %>
+          <% if (playlist_src = tidal_playlist_embed_src(@user_tidal_playlist_url)) %>
             <div class="mb-6" data-controller="toggle">
               <button type="button"
                       class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm font-semibold text-purple-300 hover:text-purple-200 hover:border-purple-400"

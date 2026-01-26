@@ -13,6 +13,9 @@ class WeeksController < ApplicationController
     @group = @season.group
     @submissions = @week.submissions.includes(:user, :votes)
     @user_submission = @week.submissions.find_by(user: current_user)
+    if @week.voting_phase? || @week.results_phase?
+      @user_tidal_playlist_url = ensure_user_tidal_playlist_url
+    end
 
     # For voting phase, get submissions the user hasn't voted on yet (excluding their own)
     if @week.voting_phase?
@@ -81,5 +84,17 @@ class WeeksController < ApplicationController
     unless @group.members.include?(current_user)
       redirect_to root_path, alert: "You must be a member of this group to access this page."
     end
+  end
+
+  def ensure_user_tidal_playlist_url
+    return unless current_user&.tidal_account
+
+    existing_playlist = UserPlaylist.find_by(user: current_user, week: @week)
+    return existing_playlist.tidal_url if existing_playlist
+
+    legacy_playlist = UserPlaylist.find_by(user: current_user, name: @week.category)
+    return legacy_playlist.tidal_url if legacy_playlist
+
+    GeneratePlaylistsJob.perform_now(@week.id, current_user.id)
   end
 end

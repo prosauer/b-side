@@ -6,8 +6,11 @@ class GeneratePlaylistsJob < ApplicationJob
     user = User.find(user_id)
     submissions = week.submissions.includes(:user)
 
-    existing_playlist = UserPlaylist.find_by(user: user, name: week.category)
+    existing_playlist = UserPlaylist.find_by(user: user, week: week)
     return existing_playlist.tidal_url if existing_playlist
+
+    legacy_playlist = UserPlaylist.find_by(user: user, name: week.category)
+    return legacy_playlist.tidal_url if legacy_playlist
 
     return if submissions.empty?
 
