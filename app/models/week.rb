@@ -21,5 +21,4 @@ class Week < ApplicationRecord
   def results_phase?
     Time.current >= voting_deadline
   end
-
 end

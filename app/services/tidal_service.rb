@@ -238,8 +238,8 @@ class TidalService
 
     # IMPORTANT: send filter[id] as repeated params (JSON:API-style), not comma-separated
     params = []
-    params << ["countryCode", country_code]
-    params << ["include", "artists,albums"]
+    params << [ "countryCode", country_code ]
+    params << [ "include", "artists,albums" ]
     ids.each { |id| params << ["filter[id]", id.to_s] }
     uri.query = URI.encode_www_form(params)
 
