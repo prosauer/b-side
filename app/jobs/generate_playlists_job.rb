@@ -6,44 +6,11 @@ class GeneratePlaylistsJob < ApplicationJob
     user = User.find(user_id)
     submissions = week.submissions.includes(:user)
 
-    existing_playlist = UserPlaylist.find_by(user: user, name: week.category)
-    return existing_playlist.tidal_url if existing_playlist
-
-    return if submissions.empty?
-
-    # Generate Tidal playlist
-    tidal_account = user.tidal_account
-    return unless tidal_account
-
-    tidal_service = TidalService.new
-    access_token = ensure_tidal_access_token(tidal_service, tidal_account)
-    return unless access_token
-
-    tidal_url = tidal_service.create_playlist(
+    playlist_generator = PlaylistGenerator.new(user: user)
+    playlist_generator.generate(
       name: week.category,
       tracks: submissions.map(&:tidal_id).compact,
-      access_token: access_token
+      week: week
     )
-    if tidal_url
-      week.update(tidal_playlist_url: tidal_url)
-      UserPlaylist.create!(user: user, week: week, name: week.category, tidal_url: tidal_url)
-    end
-    tidal_url
-  end
-
-  private
-
-  def ensure_tidal_access_token(service, tidal_account)
-    return tidal_account.access_token unless tidal_account.expired? && tidal_account.refresh_token.present?
-
-    token_data = service.refresh_access_token(refresh_token: tidal_account.refresh_token)
-    return unless token_data
-
-    tidal_account.update!(
-      access_token: token_data["access_token"],
-      refresh_token: token_data["refresh_token"].presence || tidal_account.refresh_token,
-      expires_at: token_data["expires_in"] ? Time.current + token_data["expires_in"].to_i.seconds : nil
-    )
-    tidal_account.access_token
   end
 end

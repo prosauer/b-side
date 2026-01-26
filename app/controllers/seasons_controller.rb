@@ -40,6 +40,17 @@ class SeasonsController < ApplicationController
     @rankings = user_stats.values.sort_by { |s| -s[:total_score] }
   end
 
+  def generate_playlist
+    season = @group.seasons.find(params[:id])
+    tidal_url = GenerateSeasonPlaylistJob.perform_now(season.id, current_user.id)
+    if tidal_url.present?
+      redirect_to tidal_url, allow_other_host: true
+    else
+      redirect_to group_season_path(@group, season),
+                  alert: "Unable to create a playlist right now."
+    end
+  end
+
   def new
     @season = @group.seasons.build
   end

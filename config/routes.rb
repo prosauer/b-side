@@ -17,6 +17,9 @@ Rails.application.routes.draw do
   # Groups
   resources :groups do
     resources :seasons, only: [ :index, :new, :create, :show ] do
+      member do
+        post :generate_playlist
+      end
       resources :weeks, only: [ :index, :show, :edit, :update ] do
         member do
           post :generate_playlist
@@ -30,6 +33,7 @@ Rails.application.routes.draw do
     end
     member do
       get :invite
+      post :generate_playlist
     end
     # Leaderboards
     get "leaderboard/weekly/:week_id", to: "leaderboards#weekly", as: :weekly_leaderboard

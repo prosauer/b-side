@@ -239,10 +239,17 @@
   <% if @week.results_phase? %>
     <div class="space-y-6">
       <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h2 class="text-xl font-semibold">Results</h2>
-          <%= link_to "Full Leaderboard", group_weekly_leaderboard_path(@group, week_id: @week.id), 
-              class: "text-purple-400 hover:text-purple-300 text-sm" %>
+          <div class="flex flex-wrap items-center gap-4">
+            <%= link_to "Full Leaderboard", group_weekly_leaderboard_path(@group, week_id: @week.id), 
+                class: "text-purple-400 hover:text-purple-300 text-sm" %>
+            <%= button_to "Listen to Playlist",
+                          generate_playlist_group_season_week_path(@group, @season, @week),
+                          method: :post,
+                          form: { data: { turbo: false } },
+                          class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold" %>
+          </div>
         </div>
 
         <% if @submissions.any? %>

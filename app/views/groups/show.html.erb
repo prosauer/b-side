@@ -9,7 +9,14 @@
   </div>
 
   <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
-    <h1 class="text-3xl font-bold mb-8"><%= @group.name %></h1>
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <h1 class="text-3xl font-bold"><%= @group.name %></h1>
+      <%= button_to "Listen to Playlist",
+                    generate_playlist_group_path(@group),
+                    method: :post,
+                    form: { data: { turbo: false } },
+                    class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold" %>
+    </div>
 
     <%# Current Season %>
     <% if @current_season %>
