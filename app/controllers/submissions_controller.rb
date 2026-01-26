@@ -56,7 +56,9 @@ class SubmissionsController < ApplicationController
 
   def search
     query = params[:query].to_s
-    results = TidalService.new.search_tracks(query: query)
+    tidal_service = TidalService.new
+    access_token = personalized_tidal_access_token(tidal_service)
+    results = tidal_service.search_tracks(query: query, access_token: access_token)
 
     render json: { tracks: results }
   end
@@ -87,6 +89,25 @@ class SubmissionsController < ApplicationController
     unless @group.members.include?(current_user)
       redirect_to root_path, alert: "You must be a member of this group to access this page."
     end
+  end
+
+  def personalized_tidal_access_token(tidal_service)
+    tidal_account = current_user.tidal_account
+    return unless tidal_account
+
+    return tidal_account.access_token unless tidal_account.expired?
+    return tidal_account.access_token if tidal_account.refresh_token.blank?
+
+    token_data = tidal_service.refresh_access_token(refresh_token: tidal_account.refresh_token)
+    return if token_data.blank?
+
+    tidal_account.update!(
+      access_token: token_data["access_token"],
+      refresh_token: token_data["refresh_token"].presence || tidal_account.refresh_token,
+      expires_at: token_data["expires_in"] ? Time.current + token_data["expires_in"].to_i.seconds : nil
+    )
+
+    tidal_account.access_token
   end
 
   def check_submission_phase

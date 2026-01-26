@@ -79,10 +79,10 @@ class TidalService
   # 1) GET /v2/searchResults/{query}/relationships/tracks -> track ids
   # 2) GET /v2/tracks with filter[id]=... (repeated) + include=artists,albums
   # 3) Parse artist/album from relationships + included
-  def search_tracks(query:, limit: 8, country_code: DEFAULT_COUNTRY_CODE)
-    return [] if query.blank? || @client_id.blank? || @client_secret.blank?
+  def search_tracks(query:, limit: 8, country_code: DEFAULT_COUNTRY_CODE, access_token: nil)
+    return [] if query.blank?
 
-    token = access_token
+    token = access_token || access_token()
     return [] if token.blank?
 
     track_ids = fetch_search_track_ids(token, query, limit: limit, country_code: country_code)
