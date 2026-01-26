@@ -6,6 +6,7 @@ export default class extends Controller {
     "suggestions",
     "selected",
     "error",
+    "cover",
     "title",
     "artist",
     "album",
@@ -120,6 +121,8 @@ export default class extends Controller {
     this.artistFieldTarget.value = track.artist
     this.urlFieldTarget.value = track.url
     this.tidalIdFieldTarget.value = track.id
+    this.coverTarget.src = track.imageUrl || ""
+    this.coverTarget.alt = track.album ? `Album cover for ${track.album}` : "Album cover"
     this.titleTarget.textContent = track.title
     this.artistTarget.textContent = track.artist
     this.albumTarget.textContent = track.album || "Unknown album"
@@ -132,6 +135,8 @@ export default class extends Controller {
     this.artistFieldTarget.value = ""
     this.urlFieldTarget.value = ""
     this.tidalIdFieldTarget.value = ""
+    this.coverTarget.src = ""
+    this.coverTarget.alt = ""
     this.titleTarget.textContent = ""
     this.artistTarget.textContent = ""
     this.albumTarget.textContent = ""
