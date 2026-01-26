@@ -71,21 +71,15 @@
 
       <% selected_classes = @submission.tidal_id.present? ? "border border-gray-700 rounded-lg p-4 bg-gray-900/60" : "hidden border border-gray-700 rounded-lg p-4 bg-gray-900/60" %>
       <div id="tidal-selected" class="<%= selected_classes %>" data-tidal-search-target="selected">
-        <iframe src="<%= @submission.tidal_id.present? ? "https://embed.tidal.com/tracks/#{@submission.tidal_id}" : "" %>"
-                width="100%"
-                height="120"
-                class="w-full max-w-full rounded-md border-0"
-                allow="encrypted-media; fullscreen; clipboard-write https://embed.tidal.com; web-share"
-                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-                style="color-scheme: dark"
-                title="TIDAL Embed Player"
-                data-tidal-search-target="embed"></iframe>
-        <div class="hidden">
-          <img alt="" data-tidal-search-target="cover" />
-          <span data-tidal-search-target="title"></span>
-          <span data-tidal-search-target="artist"></span>
-          <span data-tidal-search-target="album"></span>
-        </div>
+        <p id="tidal-title" class="text-lg font-semibold" data-tidal-search-target="title">
+          <%= @submission.song_title %>
+        </p>
+        <p id="tidal-artist" class="text-purple-400" data-tidal-search-target="artist">
+          <%= @submission.artist %>
+        </p>
+        <p id="tidal-album" class="text-sm text-gray-400" data-tidal-search-target="album">
+          <%= @submission.song_title.present? ? "Unknown album" : "" %>
+        </p>
       </div>
 
       <%= f.hidden_field :song_title, id: "submission-song-title", data: { "tidal-search-target": "songTitleField" } %>
