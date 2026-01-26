@@ -6,6 +6,7 @@ class GenerateGroupPlaylistJob < ApplicationJob
     user = User.find(user_id)
     submissions = Submission.joins(week: :season)
                             .where(seasons: { group_id: group.id })
+                            .where("weeks.submission_deadline <= ?", Time.current)
                             .includes(:user)
 
     playlist_generator = PlaylistGenerator.new(user: user)
