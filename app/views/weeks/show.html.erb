@@ -115,7 +115,7 @@
            data-vote-points-max-per-song-value="<%= @group.max_points_per_song %>">
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
           <h2 class="text-xl font-semibold">Vote on Submissions</h2>
-          <%= button_to "Create Playlist",
+          <%= button_to "Listen to Playlist",
                         generate_playlist_group_season_week_path(@group, @season, @week),
                         method: :post,
                         form: { data: { turbo: false } },
@@ -135,30 +135,6 @@
             the deadline.
           </p>
         </div>
-
-        <% if @week.tidal_playlist_url.present? %>
-          <% if (playlist_src = tidal_playlist_embed_src(@week.tidal_playlist_url)) %>
-            <div class="mb-4" data-controller="toggle">
-              <button type="button"
-                      class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm font-semibold text-purple-300 hover:text-purple-200 hover:border-purple-400"
-                      data-action="click->toggle#toggle"
-                      data-toggle-target="button"
-                      aria-expanded="false">
-                ▶ Play submissions
-              </button>
-              <div class="mt-3 hidden" data-toggle-target="panel">
-                <iframe src="<%= playlist_src %>"
-                        width="100%"
-                        height="120"
-                        class="w-full max-w-full rounded-md border-0"
-                        allow="encrypted-media; fullscreen; clipboard-write https://embed.tidal.com; web-share"
-                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-                        style="color-scheme: dark"
-                        title="TIDAL Embed Player"></iframe>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
 
         <% if @submissions_to_vote.any? %>
           <%= form_with url: week_votes_path(@week), method: :post do %>
@@ -256,30 +232,6 @@
           <%= link_to "Full Leaderboard", group_weekly_leaderboard_path(@group, week_id: @week.id), 
               class: "text-purple-400 hover:text-purple-300 text-sm" %>
         </div>
-
-        <% if @week.tidal_playlist_url.present? %>
-          <% if (playlist_src = tidal_playlist_embed_src(@week.tidal_playlist_url)) %>
-            <div class="mb-6" data-controller="toggle">
-              <button type="button"
-                      class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm font-semibold text-purple-300 hover:text-purple-200 hover:border-purple-400"
-                      data-action="click->toggle#toggle"
-                      data-toggle-target="button"
-                      aria-expanded="false">
-                ▶ Play submissions
-              </button>
-              <div class="mt-3 hidden" data-toggle-target="panel">
-                <iframe src="<%= playlist_src %>"
-                        width="100%"
-                        height="120"
-                        class="w-full max-w-full rounded-md border-0"
-                        allow="encrypted-media; fullscreen; clipboard-write https://embed.tidal.com; web-share"
-                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-                        style="color-scheme: dark"
-                        title="TIDAL Embed Player"></iframe>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
 
         <% if @submissions.any? %>
           <div class="space-y-4">

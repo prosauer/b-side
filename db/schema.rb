@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_25_154403) do
     t.datetime "created_at", null: false
     t.string "song_title", null: false
     t.string "song_url"
+    t.string "spotify_uri"
     t.string "tidal_id"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -119,6 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_25_154403) do
     t.datetime "created_at", null: false
     t.integer "number", null: false
     t.bigint "season_id", null: false
+    t.string "spotify_playlist_url"
     t.datetime "submission_deadline", null: false
     t.string "tidal_playlist_url"
     t.datetime "updated_at", null: false
