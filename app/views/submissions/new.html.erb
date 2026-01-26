@@ -80,6 +80,12 @@
                 style="color-scheme: dark"
                 title="TIDAL Embed Player"
                 data-tidal-search-target="embed"></iframe>
+        <div class="hidden">
+          <img alt="" data-tidal-search-target="cover" />
+          <span data-tidal-search-target="title"></span>
+          <span data-tidal-search-target="artist"></span>
+          <span data-tidal-search-target="album"></span>
+        </div>
       </div>
 
       <%= f.hidden_field :song_title, id: "submission-song-title", data: { "tidal-search-target": "songTitleField" } %>
