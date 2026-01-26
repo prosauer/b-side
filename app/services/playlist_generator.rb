@@ -7,7 +7,7 @@ class PlaylistGenerator
     existing_playlist = UserPlaylist.find_by(user: @user, name: name)
     tidal_account = @user.tidal_account
     tidal_service = TidalService.new
-    access_token = ensure_tidal_access_token(tidal_service, tidal_account) if tidal_account
+    access_token = tidal_service.access_token_for(tidal_account) if tidal_account
 
     if existing_playlist
       playlist_id = extract_playlist_id(existing_playlist.tidal_url)
@@ -46,17 +46,4 @@ class PlaylistGenerator
     match ? match[1] : nil
   end
 
-  def ensure_tidal_access_token(service, tidal_account)
-    return tidal_account.access_token unless tidal_account.expired? && tidal_account.refresh_token.present?
-
-    token_data = service.refresh_access_token(refresh_token: tidal_account.refresh_token)
-    return unless token_data
-
-    tidal_account.update!(
-      access_token: token_data["access_token"],
-      refresh_token: token_data["refresh_token"].presence || tidal_account.refresh_token,
-      expires_at: token_data["expires_in"] ? Time.current + token_data["expires_in"].to_i.seconds : nil
-    )
-    tidal_account.access_token
-  end
 end

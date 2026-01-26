@@ -82,7 +82,7 @@ class TidalService
   def search_tracks(query:, limit: 8, country_code: DEFAULT_COUNTRY_CODE, access_token: nil)
     return [] if query.blank?
 
-    token = access_token || access_token()
+    token = access_token.presence || access_token()
     return [] if token.blank?
 
     track_ids = fetch_search_track_ids(token, query, limit: limit, country_code: country_code)
@@ -121,6 +121,27 @@ class TidalService
       body["access_token"]
     end
   end
+
+  public
+
+  def access_token_for(tidal_account)
+    return if tidal_account.blank?
+
+    return tidal_account.access_token unless tidal_account.expired? && tidal_account.refresh_token.present?
+
+    token_data = refresh_access_token(refresh_token: tidal_account.refresh_token)
+    return if token_data.blank?
+
+    tidal_account.update!(
+      access_token: token_data["access_token"],
+      refresh_token: token_data["refresh_token"].presence || tidal_account.refresh_token,
+      expires_at: token_data["expires_in"] ? Time.current + token_data["expires_in"].to_i.seconds : nil
+    )
+
+    tidal_account.access_token
+  end
+
+  private
 
   # ---------------------------
   # HTTP helpers
