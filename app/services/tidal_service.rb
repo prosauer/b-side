@@ -60,6 +60,21 @@ class TidalService
     "https://tidal.com/browse/playlist/#{playlist_id}"
   end
 
+  def playlist_exists?(playlist_id, access_token:, country_code: DEFAULT_COUNTRY_CODE)
+    return false if playlist_id.blank? || access_token.blank?
+
+    uri = URI("#{TIDAL_PLAYLISTS_URL}/#{playlist_id}")
+    uri.query = URI.encode_www_form(countryCode: country_code)
+
+    response = http_get(uri, access_token)
+    safe_logger_info("Tidal playlist lookup status=#{response.code} body=#{safe_log(response.body)}")
+
+    response.is_a?(Net::HTTPSuccess)
+  rescue StandardError => e
+    Rails.logger.warn("Tidal playlist lookup failed: #{e.class}: #{e.message}")
+    false
+  end
+
   # Search for tracks via v2:
   # 1) GET /v2/searchResults/{query}/relationships/tracks -> track ids
   # 2) GET /v2/tracks with filter[id]=... (repeated) + include=artists,albums

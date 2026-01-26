@@ -41,9 +41,9 @@ class WeeksController < ApplicationController
   end
 
   def generate_playlist
-    unless @week.voting_phase?
+    unless @week.voting_phase? || @week.results_phase?
       redirect_to group_season_week_path(@week.season.group, @week.season, @week),
-                  alert: "Playlists can only be generated while voting is open."
+                  alert: "Playlists can only be generated while voting is open or results are available."
       return
     end
 

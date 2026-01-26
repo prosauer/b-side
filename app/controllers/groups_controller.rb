@@ -1,6 +1,6 @@
 class GroupsController < ApplicationController
   before_action :set_group, only: [ :show, :edit, :update, :destroy ]
-  before_action :require_group_membership, only: [ :show ]
+  before_action :require_group_membership, only: [ :show, :generate_playlist ]
   before_action :require_group_admin, only: [ :edit, :update, :destroy ]
 
   def index
@@ -11,6 +11,16 @@ class GroupsController < ApplicationController
     @current_season = @group.seasons.active.first
     @members = @group.members
     @membership = @group.memberships.find_by(user: current_user)
+  end
+
+  def generate_playlist
+    tidal_url = GenerateGroupPlaylistJob.perform_now(@group.id, current_user.id)
+    if tidal_url.present?
+      redirect_to tidal_url, allow_other_host: true
+    else
+      redirect_to group_path(@group),
+                  alert: "Unable to create a playlist right now."
+    end
   end
 
   def new

@@ -9,13 +9,20 @@
   </div>
 
   <div class="mb-8">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
       <h1 class="text-3xl font-bold">Season <%= @season.number %></h1>
-      <% if @season.active %>
-        <span class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold">
-          Active Season
-        </span>
-      <% end %>
+      <div class="flex flex-wrap items-center gap-4">
+        <% if @season.active %>
+          <span class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-semibold">
+            Active Season
+          </span>
+        <% end %>
+        <%= button_to "Listen to Playlist",
+                      generate_playlist_group_season_path(@group, @season),
+                      method: :post,
+                      form: { data: { turbo: false } },
+                      class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold" %>
+      </div>
     </div>
     <p class="text-gray-400">Started <%= @season.start_date.strftime("%B %d, %Y") %></p>
   </div>
