@@ -240,7 +240,7 @@ class TidalService
     params = []
     params << [ "countryCode", country_code ]
     params << [ "include", "artists,albums" ]
-    ids.each { |id| params << ["filter[id]", id.to_s] }
+    ids.each { |id| params << [ "filter[id]", id.to_s ] }
     uri.query = URI.encode_www_form(params)
 
     response = http_get(uri, token)
@@ -279,7 +279,7 @@ class TidalService
       id   = obj["id"]&.to_s
       next if type.blank? || id.blank?
 
-      index[[type, id]] = obj["attributes"] || {}
+      index[[ type, id ]] = obj["attributes"] || {}
     end
 
     index
