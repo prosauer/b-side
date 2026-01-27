@@ -1,6 +1,6 @@
-# B-Side: Music Category Challenge App
+# RettichDieMusicLeague: Music Category Challenge App
 
-B-Side is a mobile-first web application for weekly music challenge games among friends. Each week features a category, players submit songs that fit the category, then vote on each other's picks. The app features seasonal leaderboards and automatic Spotify/Tidal playlist generation.
+RettichDieMusicLeague is a mobile-first web application for weekly music challenge games among friends. Each week features a category, players submit songs that fit the category, then vote on each other's picks. The app features seasonal leaderboards and automatic Spotify/Tidal playlist generation.
 
 ## Features
 
@@ -146,7 +146,7 @@ RAILS_ENV=production bundle exec solid_queue start
 
 ### Neon PostgreSQL (Alternative)
 
-B-Side is compatible with Neon's serverless PostgreSQL. Set your `DATABASE_URL` to your Neon connection string.
+RettichDieMusicLeague is compatible with Neon's serverless PostgreSQL. Set your `DATABASE_URL` to your Neon connection string.
 
 ## API Integrations
 

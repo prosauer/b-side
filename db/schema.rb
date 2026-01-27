@@ -26,10 +26,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_26_000000) do
   end
 
   create_table "likes", force: :cascade do |t|
-    t.bigint "submission_id", null: false
     t.datetime "created_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "submission_id", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["submission_id", "user_id"], name: "index_likes_on_submission_id_and_user_id", unique: true
     t.index ["submission_id"], name: "index_likes_on_submission_id"
     t.index ["user_id"], name: "index_likes_on_user_id"

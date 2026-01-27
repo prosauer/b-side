@@ -1,5 +1,5 @@
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">B-Side Music Challenge</h1>
+  <h1 class="text-3xl font-bold mb-8">RettichDieMusicLeague</h1>
 
   <% if user_signed_in? %>
     <div class="mb-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
@@ -67,7 +67,7 @@
     </div>
   <% else %>
     <div class="text-center">
-      <p class="text-xl mb-8">Welcome to B-Side! Sign in to join the music challenge.</p>
+      <p class="text-xl mb-8">Welcome to RettichDieMusicLeague! Sign in to join the music challenge.</p>
       <%= link_to "Sign In", new_user_session_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg inline-block mr-4" %>
       <%= link_to "Sign Up", new_user_registration_path, class: "bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg inline-block" %>
     </div>
