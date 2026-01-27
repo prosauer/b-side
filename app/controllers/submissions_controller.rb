@@ -1,5 +1,5 @@
 class SubmissionsController < ApplicationController
-  before_action :set_week, only: [ :new, :create, :search, :update ]
+  before_action :set_week, only: [ :new, :create, :search, :lookup, :update ]
   before_action :set_submission, only: [ :show, :update ]
   before_action :require_group_membership
   before_action :check_submission_phase, only: [ :new, :create, :update ]
@@ -59,6 +59,17 @@ class SubmissionsController < ApplicationController
     results = TidalService.new.search_tracks(query: query)
 
     render json: { tracks: results }
+  end
+
+  def lookup
+    url = params[:url].to_s
+    track = TidalService.new.track_from_url(url: url)
+
+    if track
+      render json: { track: track }
+    else
+      render json: { error: "Track not found" }, status: :not_found
+    end
   end
 
   private

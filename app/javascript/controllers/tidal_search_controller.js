@@ -3,9 +3,11 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "input",
+    "urlInput",
     "suggestions",
     "selected",
     "error",
+    "urlError",
     "cover",
     "title",
     "artist",
@@ -19,11 +21,13 @@ export default class extends Controller {
   connect() {
     console.log("[tidal-search] connected", this.element)
     this.debounceTimer = null
+    this.urlDebounceTimer = null
   }
 
   search() {
     console.log("[tidal-search] search fired", this.inputTarget.value)
     this.clearSelection()
+    this.hideUrlError()
     clearTimeout(this.debounceTimer)
     this.debounceTimer = setTimeout(() => this.fetchSuggestions(), 250)
   }
@@ -48,6 +52,48 @@ export default class extends Controller {
     this.inputTarget.value = `${track.title} - ${track.artist}`
     this.setSelection(track)
     this.hideSuggestions()
+  }
+
+  lookupByUrl() {
+    clearTimeout(this.urlDebounceTimer)
+    this.urlDebounceTimer = setTimeout(() => this.fetchTrackByUrl(), 300)
+  }
+
+  async fetchTrackByUrl() {
+    if (!this.hasUrlInputTarget) return
+
+    const urlValue = this.urlInputTarget.value.trim()
+    if (!urlValue) {
+      this.hideUrlError()
+      return
+    }
+
+    const url = this.element.dataset.tidalLookupUrl
+    if (!url) {
+      console.warn("[tidal-search] missing data-tidal-lookup-url on the controller element")
+      return
+    }
+
+    try {
+      const response = await fetch(`${url}?url=${encodeURIComponent(urlValue)}`, {
+        headers: { Accept: "application/json" }
+      })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+      const data = await response.json()
+      if (!data.track) {
+        this.showUrlError()
+        return
+      }
+
+      this.inputTarget.value = `${data.track.title} - ${data.track.artist}`
+      this.setSelection(data.track)
+      this.hideSuggestions()
+      this.hideUrlError()
+    } catch (error) {
+      console.warn("[tidal-search] url lookup error", error)
+      this.showUrlError()
+    }
   }
 
   async fetchSuggestions() {
@@ -121,13 +167,14 @@ export default class extends Controller {
     this.artistFieldTarget.value = track.artist
     this.urlFieldTarget.value = track.url
     this.tidalIdFieldTarget.value = track.id
-    this.coverTarget.src = track.imageUrl || ""
+    this.coverTarget.src = track.imageUrl || track.image_url || ""
     this.coverTarget.alt = track.album ? `Album cover for ${track.album}` : "Album cover"
     this.titleTarget.textContent = track.title
     this.artistTarget.textContent = track.artist
     this.albumTarget.textContent = track.album || "Unknown album"
     this.selectedTarget.classList.remove("hidden")
     this.errorTarget.classList.add("hidden")
+    this.hideUrlError()
   }
 
   clearSelection() {
@@ -141,9 +188,22 @@ export default class extends Controller {
     this.artistTarget.textContent = ""
     this.albumTarget.textContent = ""
     this.selectedTarget.classList.add("hidden")
+    this.hideUrlError()
   }
 
   hideSuggestions() {
     this.suggestionsTarget.classList.add("hidden")
+  }
+
+  showUrlError() {
+    if (this.hasUrlErrorTarget) {
+      this.urlErrorTarget.classList.remove("hidden")
+    }
+  }
+
+  hideUrlError() {
+    if (this.hasUrlErrorTarget) {
+      this.urlErrorTarget.classList.add("hidden")
+    }
   }
 }

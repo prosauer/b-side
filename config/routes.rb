@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         resources :submissions, only: [ :index, :new, :create, :show, :update ] do
           collection do
             get :search
+            get :lookup
           end
         end
       end

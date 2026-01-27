@@ -100,6 +100,26 @@ class TidalService
     []
   end
 
+  def track_from_url(url:, country_code: DEFAULT_COUNTRY_CODE)
+    track_id = extract_track_id(url)
+    return if track_id.blank?
+
+    find_track_by_id(id: track_id, country_code: country_code)
+  end
+
+  def find_track_by_id(id:, country_code: DEFAULT_COUNTRY_CODE)
+    return if id.blank? || @client_id.blank? || @client_secret.blank?
+
+    token = access_token
+    return if token.blank?
+
+    tracks = fetch_tracks_by_ids(token, [ id ], country_code: country_code)
+    tracks.first
+  rescue StandardError => e
+    Rails.logger.warn("Tidal track lookup failed: #{e.class}: #{e.message}")
+    nil
+  end
+
   private
 
   # ---------------------------
@@ -190,6 +210,18 @@ class TidalService
   # ---------------------------
   # Search + fetch
   # ---------------------------
+
+  def extract_track_id(url)
+    return if url.blank?
+
+    uri = URI.parse(url)
+    return unless uri&.host&.include?("tidal.com")
+
+    match = uri.path.to_s.match(%r{/track/(\d+)}i)
+    match&.[](1)
+  rescue URI::InvalidURIError
+    nil
+  end
 
   def fetch_search_track_ids(token, query, limit:, country_code:)
     encoded_query = URI.encode_www_form_component(query).gsub("+", "%20")

@@ -29,7 +29,8 @@
                   data: {
                     controller: "tidal-search",
                     action: "submit->tidal-search#validate click->tidal-search#close",
-                    "tidal-search-url": search_group_season_week_submissions_path(@group, @season, @week)
+                    "tidal-search-url": search_group_season_week_submissions_path(@group, @season, @week),
+                    "tidal-lookup-url": lookup_group_season_week_submissions_path(@group, @season, @week)
                   } do |f| %>
       <% if @submission.errors.any? %>
         <div class="bg-red-500/10 border border-red-500 rounded-lg p-4">
@@ -69,6 +70,26 @@
         </p>
         <p id="tidal-error" class="text-sm text-red-400 hidden" data-tidal-search-target="error">
           Select a track from the list before submitting.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <label for="tidal-url" class="block text-sm font-semibold">Paste a Tidal track link</label>
+        <input
+          id="tidal-url"
+          name="tidal_url"
+          type="url"
+          autocomplete="off"
+          class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+          placeholder="https://tidal.com/browse/track/123456789"
+          data-tidal-search-target="urlInput"
+          data-action="input->tidal-search#lookupByUrl"
+        />
+        <p class="text-sm text-gray-400">
+          Paste a full Tidal track link to auto-fill your submission.
+        </p>
+        <p id="tidal-url-error" class="text-sm text-red-400 hidden" data-tidal-search-target="urlError">
+          We couldn’t find that Tidal track link. Double-check the URL.
         </p>
       </div>
 
