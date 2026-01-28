@@ -7,6 +7,7 @@ export default class extends Controller {
     "suggestions",
     "selected",
     "error",
+    "warning",
     "urlError",
     "cover",
     "title",
@@ -175,6 +176,7 @@ export default class extends Controller {
     this.selectedTarget.classList.remove("hidden")
     this.errorTarget.classList.add("hidden")
     this.hideUrlError()
+    this.fetchDuplicates(track)
   }
 
   clearSelection() {
@@ -189,6 +191,7 @@ export default class extends Controller {
     this.albumTarget.textContent = ""
     this.selectedTarget.classList.add("hidden")
     this.hideUrlError()
+    this.hideWarning()
   }
 
   hideSuggestions() {
@@ -204,6 +207,81 @@ export default class extends Controller {
   hideUrlError() {
     if (this.hasUrlErrorTarget) {
       this.urlErrorTarget.classList.add("hidden")
+    }
+  }
+
+  async fetchDuplicates(track) {
+    if (!track?.title || !track?.artist) return
+    const url = this.element.dataset.tidalDuplicatesUrl
+    if (!url) return
+
+    const params = new URLSearchParams({
+      song_title: track.title,
+      artist: track.artist
+    })
+
+    const submissionId = this.element.dataset.tidalSubmissionId
+    if (submissionId) params.set("submission_id", submissionId)
+
+    try {
+      const response = await fetch(`${url}?${params.toString()}`, {
+        headers: { Accept: "application/json" }
+      })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      const data = await response.json()
+      this.renderWarning(data)
+    } catch (error) {
+      console.warn("[tidal-search] duplicate check error", error)
+      this.hideWarning()
+    }
+  }
+
+  renderWarning(data) {
+    if (!this.hasWarningTarget || !data) return
+
+    const messages = []
+    const weekMessage = this.scopeMessage("This week", data.week)
+    const seasonMessage = this.scopeMessage("This season", data.season, "this season")
+    const groupMessage = this.scopeMessage("This group", data.group, "in this group")
+
+    if (weekMessage) messages.push(weekMessage)
+    if (seasonMessage) messages.push(seasonMessage)
+    if (groupMessage) messages.push(groupMessage)
+
+    if (!messages.length) {
+      this.hideWarning()
+      return
+    }
+
+    this.warningTarget.textContent = `Warning: ${messages.join(" ")}`
+    this.warningTarget.classList.remove("hidden")
+  }
+
+  scopeMessage(label, summary, suffix) {
+    if (!summary) return null
+
+    const parts = []
+    if (summary.same_song) {
+      parts.push("this song has already been submitted")
+    } else if (summary.same_artist) {
+      parts.push("a song by this artist has already been submitted")
+    }
+
+    if (!parts.length) return null
+
+    if (suffix) {
+      const countLabel = summary.artist_count === 1 ? "time" : "times"
+      parts.push(`This artist has been submitted ${summary.artist_count} ${countLabel} ${suffix}.`)
+      return `${label}: ${parts.join(". ")}`
+    }
+
+    return `${label}: ${parts.join(". ")}.`
+  }
+
+  hideWarning() {
+    if (this.hasWarningTarget) {
+      this.warningTarget.classList.add("hidden")
+      this.warningTarget.textContent = ""
     }
   }
 }
