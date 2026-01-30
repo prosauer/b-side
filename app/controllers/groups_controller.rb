@@ -25,7 +25,7 @@ class GroupsController < ApplicationController
       @category_vote_ids_by_submission = {}
     end
     @season_options = @group.seasons.order(number: :desc).map do |season|
-      ["Season #{season.number}", season.id]
+      [ "Season #{season.number}", season.id ]
     end
     @week_options = @group.seasons.includes(:weeks).flat_map do |season|
       season.weeks.order(:number).map do |week|
