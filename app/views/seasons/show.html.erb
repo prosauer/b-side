@@ -33,23 +33,12 @@
     <p class="text-gray-400">Started <%= start_time.strftime("%B %d, %Y %I:%M %p") %></p>
   </div>
 
-  <%# Add Banner Placeholder %>
-  <div class="mb-8 overflow-hidden rounded-xl border border-dashed border-purple-500/50 bg-gray-900/60">
+  <%# Add Banner %>
+  <div class="mb-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
     <div class="relative">
       <%= image_tag "ad.png",
                     alt: "",
-                    class: "h-40 w-full object-cover opacity-40" %>
-      <div class="absolute inset-0 flex flex-col justify-center px-6 py-5 text-purple-100">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 class="text-lg font-semibold">Add a Season Banner</h2>
-            <p class="text-sm text-purple-200/80">Upload a banner image to personalize this season.</p>
-          </div>
-          <span class="rounded-full border border-purple-300/40 bg-purple-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-purple-100">
-            Add Banner
-          </span>
-        </div>
-      </div>
+                    class: "h-full w-full" %>
     </div>
   </div>
 
