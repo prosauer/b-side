@@ -1,0 +1,120 @@
+<div class="max-w-3xl mx-auto">
+  <div class="mb-6">
+    <%= link_to group_season_path(@group, @season), class: "text-purple-400 hover:text-purple-300 inline-flex items-center" do %>
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Season <%= @season.number %>
+    <% end %>
+  </div>
+
+  <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+    <h1 class="text-3xl font-bold mb-6">Edit Season</h1>
+
+    <div class="bg-gray-900 rounded-lg p-5 border border-gray-700 mb-6 text-sm text-gray-300">
+      <p class="mb-2"><strong>Schedule updates:</strong> Start date/time changes apply to all weeks.</p>
+      <p>Other schedule changes only apply to weeks that are still in "Submission open".</p>
+    </div>
+
+    <%= form_with model: [@group, @season], method: :patch, class: "space-y-8" do |f| %>
+      <div class="space-y-3">
+        <%= f.label :start_at, "Season start date and time", class: "block text-sm font-semibold" %>
+        <%= f.datetime_local_field :start_at,
+          class: "w-full bg-gray-900 border border-gray-700 rounded px-4 py-2" %>
+      </div>
+
+      <div class="space-y-4" data-controller="schedule-mode">
+        <div>
+          <%= f.label :deadline_mode, "Schedule mode", class: "block text-sm font-semibold mb-2" %>
+          <%= f.select :deadline_mode,
+            options_for_select([["Weekdays", "weekdays"], ["Intervals", "intervals"]], @season.deadline_mode),
+            {},
+            class: "w-full bg-gray-900 border border-gray-700 rounded px-4 py-2",
+            data: { action: "change->schedule-mode#update", schedule_mode_target: "select" } %>
+        </div>
+
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-700 space-y-4 <%= "hidden" unless @season.deadline_mode == "weekdays" %>" data-schedule-mode-target="weekdays">
+          <h2 class="text-lg font-semibold">Weekdays</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <%= f.label :submission_weekday, "Submission deadline weekday", class: "block text-sm font-semibold mb-2" %>
+              <%= f.select :submission_weekday,
+                options_for_select(Date::DAYNAMES.each_with_index.map { |name, index| [name, index] }, @season.submission_weekday),
+                {},
+                class: "w-full bg-gray-800 border border-gray-600 rounded px-4 py-2" %>
+            </div>
+            <div>
+              <%= f.label :voting_weekday, "Voting deadline weekday", class: "block text-sm font-semibold mb-2" %>
+              <%= f.select :voting_weekday,
+                options_for_select(Date::DAYNAMES.each_with_index.map { |name, index| [name, index] }, @season.voting_weekday),
+                {},
+                class: "w-full bg-gray-800 border border-gray-600 rounded px-4 py-2" %>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400">Weekday deadlines use the season start time for the hour/minute.</p>
+        </div>
+
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-700 space-y-4 <%= "hidden" unless @season.deadline_mode == "intervals" %>" data-schedule-mode-target="intervals">
+          <h2 class="text-lg font-semibold">Intervals</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <p class="text-sm font-semibold">Submission window</p>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <%= f.label :submission_interval_days, "Days", class: "block text-xs font-semibold mb-1 text-gray-400" %>
+                  <%= f.number_field :submission_interval_days, min: 0,
+                    class: "w-full bg-gray-800 border border-gray-600 rounded px-3 py-2" %>
+                </div>
+                <div>
+                  <%= f.label :submission_interval_hours, "Hours", class: "block text-xs font-semibold mb-1 text-gray-400" %>
+                  <%= f.number_field :submission_interval_hours, min: 0,
+                    class: "w-full bg-gray-800 border border-gray-600 rounded px-3 py-2" %>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <p class="text-sm font-semibold">Voting window</p>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <%= f.label :voting_interval_days, "Days", class: "block text-xs font-semibold mb-1 text-gray-400" %>
+                  <%= f.number_field :voting_interval_days, min: 0,
+                    class: "w-full bg-gray-800 border border-gray-600 rounded px-3 py-2" %>
+                </div>
+                <div>
+                  <%= f.label :voting_interval_hours, "Hours", class: "block text-xs font-semibold mb-1 text-gray-400" %>
+                  <%= f.number_field :voting_interval_hours, min: 0,
+                    class: "w-full bg-gray-800 border border-gray-600 rounded px-3 py-2" %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400">Voting interval is added after the submission window ends.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <%= f.submit "Save changes", class: "bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold cursor-pointer" %>
+        <%= link_to "Cancel", group_season_path(@group, @season), class: "text-gray-400 hover:text-white" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script type="module">
+  const root = document.querySelector("[data-controller='schedule-mode']")
+  if (root) {
+    const select = root.querySelector("[data-schedule-mode-target='select']")
+    const weekdays = root.querySelector("[data-schedule-mode-target='weekdays']")
+    const intervals = root.querySelector("[data-schedule-mode-target='intervals']")
+
+    const update = () => {
+      if (!select || !weekdays || !intervals) return
+      const mode = select.value
+      weekdays.classList.toggle("hidden", mode !== "weekdays")
+      intervals.classList.toggle("hidden", mode !== "intervals")
+    }
+
+    update()
+    if (select) select.addEventListener("change", update)
+  }
+</script>

@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # Groups
   resources :groups do
     resources :memberships, only: [ :update ]
-    resources :seasons, only: [ :index, :new, :create, :show ] do
+    resources :seasons, only: [ :index, :new, :create, :show, :edit, :update ] do
       member do
         post :generate_playlist
       end

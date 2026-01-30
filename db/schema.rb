@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_29_123200) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -72,10 +72,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_123200) do
     t.datetime "category_submission_deadline"
     t.datetime "category_voting_deadline"
     t.datetime "created_at", null: false
+    t.string "deadline_mode", default: "weekdays", null: false
     t.bigint "group_id", null: false
     t.integer "number", null: false
+    t.datetime "start_at", null: false
     t.date "start_date"
+    t.integer "submission_interval_days", default: 3, null: false
+    t.integer "submission_interval_hours", default: 0, null: false
+    t.integer "submission_weekday", default: 4, null: false
     t.datetime "updated_at", null: false
+    t.integer "voting_interval_days", default: 3, null: false
+    t.integer "voting_interval_hours", default: 0, null: false
+    t.integer "voting_weekday", default: 0, null: false
     t.index ["group_id", "number"], name: "index_seasons_on_group_id_and_number", unique: true
     t.index ["group_id"], name: "index_seasons_on_group_id"
   end
