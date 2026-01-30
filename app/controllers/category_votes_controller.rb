@@ -32,5 +32,4 @@ class CategoryVotesController < ApplicationController
       redirect_to root_path, alert: "You must be a member of this group to access this page."
     end
   end
-
 end
