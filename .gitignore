@@ -37,3 +37,6 @@
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
+
+# Ignore puma.rb
+/config/puma.rb
